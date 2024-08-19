@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
-import DerivacionList from "../../components/derivacion/derivacionList";
+import Layout from "../Layout";
+import FormAddInstructor from "../../components/instructor/FormAddInstructor";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Layout from "../Layout";
 import { getMe } from "../../features/authSlice";
 
-const Derivaciones = () => {
+const AddInstructor = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
+  const { isError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -18,12 +18,15 @@ const Derivaciones = () => {
     if (isError) {
       navigate("/");
     }
-  }, [isError, navigate]);
+    if (user && user.ID_ROL !== 1) {
+      navigate("/dashboard");
+    }
+  }, [isError, user, navigate]);
   return (
     <Layout>
-      <DerivacionList />
+      <FormAddInstructor />
     </Layout>
   );
 };
 
-export default Derivaciones;
+export default AddInstructor;

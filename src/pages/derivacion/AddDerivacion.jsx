@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import Layout from "../Layout";
+import FormAddDerivacion from "../../components/derivacion/FormAddDerivacion";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import FormAddDerivacion from "../../components/derivacion/FormAddDerivacion";
 import { getMe } from "../../features/authSlice";
 
 const AddDerivacion = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
+  const { isError, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -18,7 +18,8 @@ const AddDerivacion = () => {
     if (isError) {
       navigate("/");
     }
-  }, [isError, navigate]);
+
+  }, [isError, user, navigate]);
   return (
     <Layout>
       <FormAddDerivacion />

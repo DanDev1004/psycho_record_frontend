@@ -7,10 +7,8 @@ const Welcome = () => {
     <div>
       <h1 className="title">Dashboard</h1>
       <h2>
-        Bienvenido <strong>{user && user.NOMBRE_USUARIO}</strong>
+        Bienvenido <strong>{user && user.NOMBRE_USUARIO} {user && user.APELLIDO_USUARIO}</strong>
       </h2>
-      <br />
-        <p>Esta es una sección en desarrollo para la implementación de graficos estadisticos cuyos datos serán analizados con librerias de python, gracias por su atención:D</p>
     </div>
   );
 };

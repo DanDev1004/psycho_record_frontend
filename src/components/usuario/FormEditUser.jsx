@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux"; 
+import "../../assets/styles/Form.css";
 
 const FormEditUser = () => {
   const [dni, setDni] = useState("");
@@ -11,9 +13,12 @@ const FormEditUser = () => {
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [rol, setRole] = useState("");
+  const [roles, setRoles] = useState([]);
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { user } = useSelector((state) => state.auth); 
 
   useEffect(() => {
     const getUserById = async () => {
@@ -24,8 +29,8 @@ const FormEditUser = () => {
         setApellidos(response.data.APELLIDO_USUARIO);
         setUsername(response.data.USERNAME);
         setEmail(response.data.EMAIL);
-        setPassword(response.data.USER_PASSWORD);
-        setConfPassword(response.data.CONF_USER_PASSWORD);
+        setPassword(""); 
+        setConfPassword("");
         setRole(response.data.ID_ROL);
       } catch (error) {
         if (error.response) {
@@ -33,7 +38,18 @@ const FormEditUser = () => {
         }
       }
     };
+
+    const cargarRoles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/rol");
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Error al cargar los roles", error);
+      }
+    };
+
     getUserById();
+    cargarRoles();
   }, [id]);
 
   const updateUser = async (e) => {
@@ -56,130 +72,152 @@ const FormEditUser = () => {
       }
     }
   };
+
   return (
     <div>
-      <h1 className="title">Usuarios</h1>
-      <h2 className="subtitle">Actualizar usuarios</h2>
-      <div className="card is-shadowless">
-        <div className="card-content">
-          <div className="content">
-            <form onSubmit={updateUser}>
-              <p className="has-text-centered">{msg}</p>
+      <NavLink to={"/usuarios"}>
+        <button className="btn-regresar">Regresar</button>
+      </NavLink>
 
-              <div className="field">
-                <label className="label">DNI</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                    placeholder="dni"
-                  />
-                </div>
-              </div>
+      <h1 className="title-form">Actualizar Usuarios</h1>
 
-              <div className="field">
-                <label className="label">Nombres</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={nombres}
-                    onChange={(e) => setNombres(e.target.value)}
-                    placeholder="nombres"
-                  />
-                </div>
-              </div>
+      <div className="contenedor">
 
-              <div className="field">
-                <label className="label">Apellidos</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={apellidos}
-                    onChange={(e) => setApellidos(e.target.value)}
-                    placeholder="apellidos"
-                  />
-                </div>
-              </div>
+        <form onSubmit={updateUser}>
+          <p>{msg}</p>
 
-              <div className="field">
-                <label className="label">username</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="username"
-                  />
-                </div>
-              </div>
-
-              <div className="field">
-                <label className="label">Email</label>
-                <div className="control">
-                  <input
-                    type="text"
-                    className="input"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Password</label>
-                <div className="control">
-                  <input
-                    type="password"
-                    className="input"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="******"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">Confirm Password</label>
-                <div className="control">
-                  <input
-                    type="password"
-                    className="input"
-                    value={confPassword}
-                    onChange={(e) => setConfPassword(e.target.value)}
-                    placeholder="******"
-                  />
-                </div>
-              </div>
-              <div className="field">
-                <label className="label">rol</label>
-                <div className="control">
-                  <div className="select is-fullwidth">
-                    <select
-                      value={rol}
-                      onChange={(e) => setRole(e.target.value)}
-                    >
-                      <option value="1">Admin</option>
-                      <option value="3">tutor</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="field">
-                <div className="control">
-                  <button type="submit" className="button is-success">
-                    Actualizar
-                  </button>
-                </div>
-              </div>
-
-            </form>
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">DNI</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={dni || ""}
+                onChange={(e) => setDni(e.target.value)}
+                placeholder="DNI"
+              />
+            </div>
           </div>
-        </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Nombres</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={nombres || ""}
+                onChange={(e) => setNombres(e.target.value)}
+                placeholder="Nombres"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Apellidos</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={apellidos || ""}
+                onChange={(e) => setApellidos(e.target.value)}
+                placeholder="Apellidos"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Username</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={username || ""}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Email</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={email || ""}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Password</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="password"
+                value={password || ""}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="******"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Confirmar Password</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="password"
+                value={confPassword || ""}
+                onChange={(e) => setConfPassword(e.target.value)}
+                placeholder="******"
+              />
+            </div>
+          </div>
+
+          {user.ID_USUARIO !== parseInt(id) && (
+            <div className="row">
+              <div className="col-25">
+                <label className="label-form">Rol</label>
+              </div>
+              <div className="col-75">
+                <select
+                  className="input-form"
+                  value={rol || ""}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="">Seleccione un rol</option>
+                  {roles.map((role) => (
+                    <option key={role.ID_ROL} value={role.ID_ROL}>
+                      {role.NOMBRE_ROL}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+
+          <div className="row">
+            <button className="button-form" type="submit">Actualizar</button>
+          </div>
+
+        </form>
       </div>
     </div>
   );

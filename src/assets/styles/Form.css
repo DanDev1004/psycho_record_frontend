@@ -1,0 +1,103 @@
+.title-form{
+    color: #0358CB;
+    margin-bottom: 10px;
+}
+
+.input-form, select, textarea{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  
+  .label-form {
+    padding: 12px 12px 12px 0;
+    display: inline-block;
+  }
+  
+
+  
+ button {
+    background-color: #0358CB;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+  }
+
+.button-form{
+    margin-top: 10px;
+}
+  
+  .contenedor {
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08); 
+    padding: 20px;
+  }
+  
+  .col-25 {
+    float: left;
+    width: 25%;
+    margin-top: 6px;
+  }
+  
+  .col-75 {
+    float: left;
+    width: 75%;
+    margin-top: 6px;
+  }
+  
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  @media screen and (max-width: 991px) {
+    .input-form, select, textarea{
+        width: 80vh;
+        margin-left: 80px;
+      }
+
+      .button-form{
+        width: 100%;
+        margin-right: -155px;
+    }
+    
+     
+  }
+  
+  @media screen and (max-width: 600px) {
+    .contenedor{
+      margin-top: 50px;
+    }
+    .col-25, .col-75, button, .button-form, .input-form, select, textarea {
+      width: 100%;
+      margin-top: 0;
+      margin-right: 0;
+      margin-left: 0;
+    }
+    .button-form{
+        margin-top: 10px;
+    }
+    .btn-regresar{
+      width: 50%;
+      float: left;
+    }
+    .title-form{
+        display: none;
+    }
+
+    .pagination button{
+      width: 30px;
+    }
+  }
+  
+ 
+  
+  

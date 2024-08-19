@@ -1,38 +1,35 @@
 import React from "react";
-import { IonIcon } from '@ionic/react';
-import {
-  menuOutline,
-  personCircle
-} from 'ionicons/icons';
+import { IonIcon } from "@ionic/react";
+import { menuOutline, personCircle, text } from "ionicons/icons";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-const Topbar = () => {
+const Topbar = ({ onToggle }) => {
+  const { user } = useSelector((state) => state.auth);
 
+  if (!user) {
+    return null; 
+  }
 
   return (
     <nav className="topbar">
-
-      <div className="palanca">
+      <div className="palanca" onClick={onToggle}>
         <IonIcon icon={menuOutline} />
       </div>
 
-      <div className="titulo-label">
-        Psychological Clinical
-      </div>
+      <div className="titulo-label">Historial Psicólogico</div>
 
-      <div className="user-label">
-
+      <Link to={`/usuario/edit/${user.ID_USUARIO}`} className="user-label">
         <div className="user-info">
           <p className="user-name">
-            <span id="user-name"></span>
+            {user.USERNAME || "----------"}
           </p>
           <p className="user-role">
-            <span id="user-role"></span>
+            {user.ROL?.NOMBRE_ROL || "----------"}
           </p>
         </div>
-
         <IonIcon icon={personCircle} className="user-icon" />
-
-      </div>
+      </Link>
     </nav>
   );
 };

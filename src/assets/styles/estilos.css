@@ -36,10 +36,11 @@ body {
   background: var(--blue);
   border-left: 10px solid var(--blue);
   transition: 0.5s;
-  overflow: hidden;
+  overflow: auto;
 }
 .navegacion.activado {
   width: 80px;
+  overflow-x: hidden;
 }
 
 .navegacion ul {
@@ -195,21 +196,29 @@ body {
   font-size: 1.2rem;
 }
 
+.searchInput label ion-icon:hover {
+  color: var(--blue);
+  top: -3px;
+  font-size: 1.5rem
+}
+
 .titulo-label{
     font-size: 2rem;
     font-weight: 600; 
-    color: var(--blue); 
+    color: var(--blue)
 }
 
 .user-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  text-decoration: none
 }
+
 
 .user-info {
   display: flex;
-  flex-direction: column;
+  flex-direction: column
 }
 
 .user-name {
@@ -218,14 +227,18 @@ body {
   display: flex;
   align-items: center;
   text-align: end;
-  margin: 0;
+  margin: 0
 }
+.user-name:hover{
+  color: var(--blue)
+}
+
 
 .user-role {
   font-style: italic;
   margin: 0;
   text-align: end;
-  color: var(--black2);
+  color: var(--black2)
 }
 
 .user-icon {
@@ -233,8 +246,9 @@ body {
   width: 40px; 
   height: 40px;
   margin-left: 10px;
-  color: var(--blue);
+  color: var(--blue)
 }
+
 
 
 /* ================== Details ============== */
@@ -245,6 +259,7 @@ body {
   display: grid;
   grid-template-columns:  1fr;
   grid-gap: 30px;
+  white-space: nowrap;
 }
 
 .details .recentTable {
@@ -259,7 +274,7 @@ body {
 .details .TableHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 .TableHeader h2 {
   font-weight: 600;
@@ -292,29 +307,48 @@ body {
 .details .recentTable table tr:last-child {
   border-bottom: none;
 }
-/*
+
 .details .recentTable table tbody tr:hover {
   background: var(--blue);
   color: var(--white);
 }
-  */
+
+
+
 .details .recentTable table tr td {
   padding: 10px;
+  text-align: center;
 }
+/*
 .details .recentTable table tr td:last-child {
   text-align: center;
 }
 
 .details .recentTable table tr td:nth-child(1) {
-  text-align: start;
+  text-align: center;
 }
 
 .details .recentTable table tr td:nth-child(2) {
-  text-align: end;
+  text-align: center;
 }
 .details .recentTable table tr td:nth-child(3) {
   text-align: center;
 }
+.details .recentTable table tr td:nth-child(4) {
+  text-align: center;
+}
+  */
+
+
+  .btn-details{
+    position: relative;
+    padding: 5px 10px;
+    background: #028b4b;
+    text-decoration: none;
+    color: var(--white);
+    border-radius: 6px;
+    margin-right: 1px;
+  }
 
 .btn-edit{
   position: relative;
@@ -335,6 +369,19 @@ body {
   border-radius: 6px;
 }
 
+.pagination{
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+.pagination span{
+  margin-top: 5px;
+}
+.pagination button{
+  font-size: 1rem;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
 
 .status.asistido {
   padding: 2px 4px;
@@ -409,7 +456,7 @@ body {
 }
 
 /* ====================== Responsive Design ========================== */
-@media (max-width: 991px) {  /*PANTALLA COMPLETA*/
+@media (max-width: 991px) {  /*MEDIA PANTALLA - PANEL ABIERTO*/
   .navegacion {
     left: -300px;
   }
@@ -427,9 +474,12 @@ body {
   .cardBox {
     grid-template-columns: repeat(2, 1fr);
   }
+  .recentTable{
+    overflow-x: auto;
+  }
 }
 
-@media (max-width: 768px) { /*MEDIA PANTALLA*/
+@media (max-width: 768px) { /*MEDIA PANTALLA - PANEL CERRADO*/
   .details {
     grid-template-columns: 1fr;
   }
@@ -442,8 +492,7 @@ body {
 }
 
 
- /*CELULARES*/
-@media (max-width: 480px) {
+@media (max-width: 480px) {/*CELULARES*/
   .titulo-label {
     margin-top: 0.2px;
     font-size: 1.7rem;
@@ -458,8 +507,7 @@ body {
   .TableHeader h2 {
     font-size: 20px;
   }
-
-
+  
   .user {
     min-width: 40px;
   }
@@ -475,11 +523,20 @@ body {
   .palanca {
     z-index: 10001;
   }
+  .principal .activado{
+    overflow: hidden;
+  }
   .principal.activado .palanca {
     color: #fff;
     position: fixed;
-    right: 0;
+    right: -1;
     left: initial;
+    margin-left: 65px;
+  }
+
+
+  .pagination button{
+    width: 30px;
   }
 
 }

@@ -2,6 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { LoginUser, reset } from "../features/authSlice";
+import wave from "../assets/images/wave2.png"
+import welcome from "../assets/images/welcome.svg"
+import avatar from "../assets/images/avatar.svg"
+import "../assets/styles/login.css"
+
+import { IonIcon } from '@ionic/react';
+import {
+  personCircleOutline,
+  lockClosedOutline
+} from 'ionicons/icons';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +21,7 @@ const Login = () => {
   const { user, isError, isSuccess, isLoading, message } = useSelector(
     (state) => state.auth
   );
+  
 
   useEffect(() => {
     if (user || isSuccess) {
@@ -25,51 +36,64 @@ const Login = () => {
   };
 
   return (
-    <section className="hero is-fullheight is-fullwidth">
-      <div className="hero-body">
-        <div className="container">
-          <div className="columns is-centered">
-            <div className="column is-4">
-              <form onSubmit={Auth} className="box">
-                {isError && <p className="has-text-centered">{message}</p>}
-                <h1 className="title is-2">Sign In</h1>
-                <div className="field">
-                  <label className="label">Email</label>
-                  <div className="control">
-                    <input
-                      type="text"
-                      className="input"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email"
-                    />
-                  </div>
-                </div>
-                <div className="field">
-                  <label className="label">Password</label>
-                  <div className="control">
-                    <input
-                      type="password"
-                      className="input"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="******"
-                    />
-                  </div>
-                </div>
-                <div className="field mt-5">
-                  <button
-                    type="submit"
-                    className="button is-success is-fullwidth"
-                  >
-                    {isLoading ? "Loading..." : "Login"}
-                  </button>
-                </div>
-              </form>
+    <section >
+      <img className="wave" src={wave} />
+      <div className="container">
+
+        <div className="img img-welcome">
+          <img src={welcome} />
+        </div>
+
+        <div className="login-content">
+          <form onSubmit={Auth} className="form-login">
+            <img src={avatar} />
+            {isError && <p>{message}</p>}
+            <h2 className="title-welcome">Bienvenido</h2>
+
+            <div className="input-div one">
+              <div className="icon-login">
+              <IonIcon icon={personCircleOutline} />
+              </div>
+              <div className="div">
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+
+                />
+              </div>
             </div>
-          </div>
+
+            <div className="input-div pass">
+              <div className="icon-login">
+              <IonIcon icon={lockClosedOutline} />
+              </div>
+              <div className="div">
+                <input
+                  type="password"
+                  className="input"
+                  placeholder="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+
+                />
+              </div>
+            </div>
+
+            <div >
+              <button type="submit" className="button-login">
+                {isLoading ? "Loading..." : "Login"}
+              </button>
+            </div>
+
+          </form>
         </div>
       </div>
+
+
+
     </section>
   );
 };
