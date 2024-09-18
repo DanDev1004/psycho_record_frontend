@@ -4,10 +4,13 @@ import { Link } from "react-router-dom";
 import { IonIcon } from '@ionic/react';
 import { searchOutline } from 'ionicons/icons';
 import { useTable, usePagination } from 'react-table';
+import { useSelector } from 'react-redux';
 
 const AlumnoList = () => {
     const [alumnos, setAlumnos] = useState([]);
     const [searchText, setSearchText] = useState('');
+    const { user } = useSelector((state) => state.auth);
+    const idRol = user?.ID_ROL;
 
     useEffect(() => {
         obtenerTodos();
@@ -24,7 +27,7 @@ const AlumnoList = () => {
 
     const buscarAlumno = async () => {
         try {
-            const response = await axios.post("http://localhost:5000/buscarAlumno", {
+            const response = await axios.post("http://localhost:5000/alumno/buscar", {
                 searchText: searchText.trim()
             });
             setAlumnos(response.data);
@@ -54,6 +57,19 @@ const AlumnoList = () => {
         return numerosRomanos[num - 1] || num;
     };
 
+    const calcularEdad = (fechaNacimiento) => {
+        const hoy = new Date();
+        const nacimiento = new Date(fechaNacimiento);
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+            edad--;
+        }
+
+        return edad;
+    };
+
     const columns = useMemo(
         () => [
             {
@@ -62,15 +78,24 @@ const AlumnoList = () => {
             },
             {
                 Header: 'DNI',
-                accessor: 'DNI_ALUMNO',
+                accessor: 'DNI',
             },
             {
                 Header: 'NOMBRES',
-                accessor: 'NOMBRE_ALUMNO',
+                accessor: 'NOMBRES',
             },
             {
                 Header: 'APELLIDOS',
-                accessor: 'APELLIDO_ALUMNO',
+                accessor: 'APELLIDOS',
+            },
+            {
+                Header: 'PROG. ESTUDIO',
+                accessor: 'AREA_PE.NOMBRE_AREA_PE',
+            },
+            {
+                Header: 'CICLO',
+                accessor: 'CICLO',
+                Cell: ({ value }) => convertirRomanos(value)
             },
             {
                 Header: 'SEXO',
@@ -94,13 +119,18 @@ const AlumnoList = () => {
             },
             {
                 Header: 'DIR. NAC.',
-                accessor: 'DIRECCION_NACIMIENTO',
+                accessor: 'DIR_NAC',
                 Cell: ({ value }) => value || '------------',
             },
             {
                 Header: 'NAC.',
-                accessor: 'FECHA_NACIMIENTO',
+                accessor: 'FECH_NAC',
                 Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : '------------'),
+            },
+            {
+                Header: 'EDAD',
+                accessor: 'EDAD',
+                Cell: ({ row }) => (row.original.FECH_NAC ? calcularEdad(row.original.FECH_NAC) : '------------'),
             },
             {
                 Header: 'DOMICILIO',
@@ -108,29 +138,47 @@ const AlumnoList = () => {
                 Cell: ({ value }) => value || '------------',
             },
             {
-                Header: 'AULA',
-                accessor: 'AULA.ANIO',
-                Cell: ({ row }) => {
-                    const { ANIO, PERIODO, CICLO, AREA_PE } = row.original.AULA || {};
-                    if (ANIO && PERIODO && CICLO && AREA_PE) {
-                        return `${ANIO} - ${PERIODO} ciclo: ${convertirRomanos(CICLO)} - ${AREA_PE.NOMBRE_AREA_PE}`;
-                    }
-                    return '------------';
-                },
-            },
-            {
                 Header: 'ACCIONES',
                 Cell: ({ row }) => (
                     <>
-                        <Link className="btn-edit" to={`/alumno/edit/${row.original.ID_ALUMNO}`}>
-                            Editar
-                        </Link>
-                        <Link
-                            className="btn-delete"
-                            onClick={() => eliminar(row.original.ID_ALUMNO)}
-                        >
-                            Eliminar
-                        </Link>
+                        {
+                            (idRol === 1) ? (
+                                <>
+                                    <Link className="btn btn-edit" to={`/alumno/edit/${row.original.ID_ALUMNO}`}>
+                                        Editar
+                                    </Link>
+                                    <Link
+                                        className="btn btn-delete"
+                                        onClick={() => eliminar(row.original.ID_ALUMNO)}
+                                    >
+                                        Eliminar
+                                    </Link>
+                                </>
+                            ) : (idRol === 2) ? (
+                                <>
+                                    <Link
+                                        className="btn btn-details"
+                                        to={`/alumno/generar-cita/${row.original.ID_ALUMNO}`}
+                                    >
+                                        generar cita
+                                    </Link>
+                                </>
+                            ) : (idRol === 3) ? (
+                                <>
+                                    <Link className="btn btn-details" to={`/alumno/derivar/${row.original.ID_ALUMNO}`}>
+                                        Derivar
+                                    </Link>
+                                </>
+                            ) :
+
+                                (
+                                    <>
+                                        <Link className="btn" to={``}>
+                                            no reconocido
+                                        </Link>
+                                    </>
+                                )
+                        }
                     </>
                 ),
             },
@@ -178,10 +226,17 @@ const AlumnoList = () => {
                         <IonIcon icon={searchOutline} onClick={buscarAlumno} />
                     </label>
                 </div>
-                
-                <Link to="/alumno/add" className="btn">
-                    Agregar
-                </Link>
+
+                {
+                    idRol === 1 ? (
+                        <Link to="/alumno/add" className="btn">
+                            Agregar
+                        </Link>
+                    ) : (
+                        <Link to="/" style={{ opacity: '0' }}>
+                        </Link>
+                    )
+                }
             </div>
 
             <table {...getTableProps()}>
@@ -205,11 +260,11 @@ const AlumnoList = () => {
                 <tbody {...getTableBodyProps()}>
                     {page.map(row => {
                         prepareRow(row);
-                        const { key: rowKey, ...rowRest } = row.getRowProps(); 
+                        const { key: rowKey, ...rowRest } = row.getRowProps();
                         return (
                             <tr key={rowKey} {...rowRest}>
                                 {row.cells.map(cell => {
-                                    const { key: cellKey, ...cellRest } = cell.getCellProps(); 
+                                    const { key: cellKey, ...cellRest } = cell.getCellProps();
                                     return (
                                         <td key={cellKey} {...cellRest}>
                                             {cell.render('Cell')}

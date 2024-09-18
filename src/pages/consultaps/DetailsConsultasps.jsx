@@ -18,7 +18,7 @@ const PageDetailsConsultaPs = () => {
         if (isError) {
             navigate("/");
         }
-        if (user && user.ID_ROL !== 1) {
+        if (user && (user.ID_ROL !== 1 && user.ID_ROL !== 2)) {
             navigate("/dashboard");
         }
     }, [isError, user, navigate]);

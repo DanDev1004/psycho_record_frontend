@@ -18,9 +18,7 @@ const EditUser = () => {
     if (isError) {
       navigate("/");
     }
-    if (user && user.ID_ROL !== 1) {
-      navigate("/dashboard");
-    }
+  
   }, [isError, user, navigate]);
   return (
     <Layout>

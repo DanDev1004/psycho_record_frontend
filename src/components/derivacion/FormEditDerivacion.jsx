@@ -4,43 +4,24 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import "../../assets/styles/Form.css";
 
 const FormEditDerivacion = () => {
-    const [usuarios, setUsuarios] = useState([]);
-    const [listadoAulas, setListadoAulas] = useState([]);
     const [usuario, setUsuario] = useState("");
-    const [listadoAula, setListadoAula] = useState("");
+    const [alumno, setAlumno] = useState("");
     const [motivo, setMotivo] = useState("");
-    const [severidad, setSeveridad] = useState(1);
+    const [urgencia, setUrgencia] = useState(1); 
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
     const { id } = useParams();
 
     useEffect(() => {
-        const cargarUsuarios = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/usuario");
-                setUsuarios(response.data);
-            } catch (error) {
-                console.error("Error al cargar los usuarios", error);
-            }
-        };
-
-        const cargarListadoAulas = async () => {
-            try {
-                const response = await axios.get("http://localhost:5000/listadoaula");
-                setListadoAulas(response.data);
-            } catch (error) {
-                console.error("Error al cargar los listados de aula", error);
-            }
-        };
-
         const obtenerDerivacionPorId = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/derivacion/${id}`);
                 const derivacion = response.data;
-                setUsuario(derivacion.ID_USUARIO);
-                setListadoAula(derivacion.ID_LISTADO_AULA);
+
+                setUsuario(`${derivacion.USUARIO.NOMBRE_USUARIO} ${derivacion.USUARIO.APELLIDO_USUARIO}`);
+                setAlumno(`${derivacion.ALUMNO.NOMBRES} ${derivacion.ALUMNO.APELLIDOS}`);
                 setMotivo(derivacion.MOTIVO);
-                setSeveridad(derivacion.SEVERIDAD);
+                setUrgencia(derivacion.URGENCIA); 
             } catch (error) {
                 if (error.response) {
                     setMsg(error.response.data.msg);
@@ -48,8 +29,6 @@ const FormEditDerivacion = () => {
             }
         };
 
-        cargarUsuarios();
-        cargarListadoAulas();
         obtenerDerivacionPorId();
     }, [id]);
 
@@ -57,10 +36,8 @@ const FormEditDerivacion = () => {
         e.preventDefault();
         try {
             await axios.patch(`http://localhost:5000/derivacion/${id}`, {
-                ID_USUARIO: Number(usuario),
-                ID_LISTADO_AULA: Number(listadoAula),
                 MOTIVO: motivo,
-                SEVERIDAD: Number(severidad),
+                URGENCIA: Number(urgencia),
             });
             navigate("/derivaciones");
         } catch (error) {
@@ -68,24 +45,6 @@ const FormEditDerivacion = () => {
                 setMsg(error.response.data.msg);
             }
         }
-    };
-
-    // Obtener el nombre completo del usuario
-    const obtenerNombreUsuario = (usuarioId) => {
-        const usuarioEncontrado = usuarios.find((user) => user.ID_USUARIO === usuarioId);
-        return usuarioEncontrado
-            ? `${usuarioEncontrado.NOMBRE_USUARIO} ${usuarioEncontrado.APELLIDO_USUARIO}`
-            : "";
-    };
-
-    // Obtener el nombre completo del alumno
-    const obtenerNombreAlumno = (listadoAulaId) => {
-        const listadoEncontrado = listadoAulas.find(
-            (listado) => listado.ID_LISTADO_AULA === listadoAulaId
-        );
-        return listadoEncontrado
-            ? `${listadoEncontrado.ALUMNO.NOMBRE_ALUMNO} ${listadoEncontrado.ALUMNO.APELLIDO_ALUMNO}`
-            : "";
     };
 
     return (
@@ -102,30 +61,30 @@ const FormEditDerivacion = () => {
 
                     <div className="row">
                         <div className="col-25">
-                            <label className="label-form">Usuario</label>
+                            <label className="label-form">Remitente:</label>
                         </div>
                         <div className="col-75">
                             <input
                                 type="text"
                                 className="input-form"
-                                value={obtenerNombreUsuario(usuario)}
+                                value={usuario}
                                 readOnly
-                                style={{border:"none", pointerEvents:"none"}}
+                                style={{ border: "none", pointerEvents: "none" }}
                             />
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-25">
-                            <label className="label-form">Alumno</label>
+                            <label className="label-form">Alumno:</label>
                         </div>
                         <div className="col-75">
                             <input
                                 type="text"
                                 className="input-form"
-                                value={obtenerNombreAlumno(listadoAula)}
+                                value={alumno}
                                 readOnly
-                                style={{border:"none", pointerEvents:"none"}}
+                                style={{ border: "none", pointerEvents: "none" }}
                             />
                         </div>
                     </div>
@@ -146,13 +105,13 @@ const FormEditDerivacion = () => {
 
                     <div className="row">
                         <div className="col-25">
-                            <label className="label-form">Severidad</label>
+                            <label className="label-form">Urgencia</label>
                         </div>
                         <div className="col-75">
                             <select
                                 className="input-form"
-                                value={severidad}
-                                onChange={(e) => setSeveridad(e.target.value)}
+                                value={urgencia}
+                                onChange={(e) => setUrgencia(e.target.value)}
                                 required
                             >
                                 <option value="1">Baja</option>

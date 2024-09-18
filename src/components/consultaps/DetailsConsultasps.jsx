@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, NavLink } from "react-router-dom";
-import "../../assets/styles/Form.css"; 
+import "../../assets/styles/Form.css";
 
 const DetailsConsultaPs = () => {
     const { id } = useParams();
@@ -20,12 +20,20 @@ const DetailsConsultaPs = () => {
         obtenerConsulta();
     }, [id]);
 
+    const formatearFecha = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate() + 1).padStart(2, '0');
+        return `${day}-${month}-${year}`;
+    };
+
     if (!consulta) {
         return <div>Cargando...</div>;
     }
 
     return (
-        <div>
+        <div className="detailsConsultasps">
             <NavLink to={"/consultasps"}>
                 <button className="btn-regresar">Regresar</button>
             </NavLink>
@@ -48,45 +56,68 @@ const DetailsConsultaPs = () => {
                             ? "Autónomo"
                             : consulta.TIPO_DERIVACION === 2
                                 ? "Pariente"
-                                : "Instructor"}
+                                : "Docente"
+                        }
                     </div>
                 </div>
-                {consulta.TIPO_DERIVACION === 1 && consulta.LISTADO_AULA?.ALUMNO && (
+                {consulta.TIPO_DERIVACION === 1 && consulta.ALUMNO && (
                     <div className="row">
                         <div className="col-25">
                             <strong>Alumno:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.LISTADO_AULA.ALUMNO.NOMBRE_ALUMNO} {consulta.LISTADO_AULA.ALUMNO.APELLIDO_ALUMNO} (DNI: {consulta.LISTADO_AULA.ALUMNO.DNI_ALUMNO})
+                            {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
                         </div>
                     </div>
                 )}
                 {consulta.TIPO_DERIVACION === 2 && consulta.FAMILIAR && (
-                    <div className="row">
-                        <div className="col-25">
-                            <strong>Familiar:</strong>
+                    <>
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Alumno:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
+                            </div>
                         </div>
-                        <div className="col-75">
-                            {consulta.FAMILIAR.NOMBRE_FAMILIAR}
+
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Familiar:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.FAMILIAR}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
-                {consulta.TIPO_DERIVACION === 3 && consulta.LISTADO_AULA?.TUTOR?.INSTRUCTOR && (
-                    <div className="row">
-                        <div className="col-25">
-                            <strong>Tutor:</strong>
+                {consulta.TIPO_DERIVACION === 3 && consulta?.DERIVACION.USUARIO && (
+                    <>
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Alumno:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
+                            </div>
                         </div>
-                        <div className="col-75">
-                            {consulta.LISTADO_AULA.TUTOR.INSTRUCTOR.NOMBRE_INSTRUCTOR} {consulta.LISTADO_AULA.TUTOR.INSTRUCTOR.APELLIDO_INSTRUCTOR}
+
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Tutor:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.DERIVACION.USUARIO.NOMBRE_USUARIO} {consulta.DERIVACION.USUARIO.APELLIDO_USUARIO}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 )}
                 <div className="row">
                     <div className="col-25">
                         <strong>Fecha de Atención:</strong>
                     </div>
                     <div className="col-75">
-                        {new Date(consulta.FECHA_ATENCION).toLocaleDateString()}
+                        {formatearFecha(consulta.FECHA_ATENCION)}
                     </div>
                 </div>
                 <div className="row">
@@ -125,46 +156,64 @@ const DetailsConsultaPs = () => {
                         {consulta.MOTIVO}
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Problema:</strong>
+
+
+
+
+                {consulta.PROBLEMA && (
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Problema:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.PROBLEMA}
+                        </div>
                     </div>
-                    <div className="col-75">
-                        {consulta.PROBLEMA}
+                )}
+
+                {consulta.RECOMENDACION && (
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Recomendación:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.RECOMENDACION}
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Recomendación:</strong>
+                )}
+
+                {consulta.ASPECTO_FISICO && (
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Aspecto Físico:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.ASPECTO_FISICO}
+                        </div>
                     </div>
-                    <div className="col-75">
-                        {consulta.RECOMENDACION}
+                )}
+
+                {consulta.ASEO_PERSONAL && (
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Aseo Personal:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.ASEO_PERSONAL}
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Aspecto Físico:</strong>
+                )}
+
+                {consulta.CONDUCTA && (
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Conducta:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.CONDUCTA}
+                        </div>
                     </div>
-                    <div className="col-75">
-                        {consulta.ASPECTO_FISICO}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Aseo Personal:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.ASEO_PERSONAL}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Conducta:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.CONDUCTA}
-                    </div>
-                </div>
+                )}
             </div>
         </div>
     );

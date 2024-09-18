@@ -8,6 +8,7 @@ const FormAddAlumno = () => {
     const [dni, setDni] = useState("");
     const [nombres, setNombres] = useState("");
     const [apellidos, setApellidos] = useState("");
+    const [areaPe, setAreaPe] = useState(null); 
     const [sexo, setSexo] = useState("M");
     const [telefono, setTelefono] = useState("");
     const [religion, setReligion] = useState(null);
@@ -15,11 +16,13 @@ const FormAddAlumno = () => {
     const [direccionNacimiento, setDireccionNacimiento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [domicilio, setDomicilio] = useState("");
-    const [aula, setAula] = useState(null);
+    const [ciclo, setCiclo] = useState(null); 
+    const [turno, setTurno] = useState("M");
 
     const [religionOptions, setReligionOptions] = useState([]);
     const [estadoCivilOptions, setEstadoCivilOptions] = useState([]);
-    const [aulaOptions, setAulaOptions] = useState([]);
+    const [areaPeOptions, setAreaPeOptions] = useState([]); 
+    const [cicloOptions, setCicloOptions] = useState([]);
 
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
@@ -28,13 +31,11 @@ const FormAddAlumno = () => {
         const cargarReligiones = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/religion");
-
-                const formattedOptions = response.data.map(religion => ({
+                const ListaOpciones = response.data.map(religion => ({
                     value: religion.ID_RELIGION,
                     label: religion.NOMBRE_RELIGION,
                 }));
-
-                setReligionOptions(formattedOptions);
+                setReligionOptions(ListaOpciones);
             } catch (error) {
                 console.error("Error al cargar las religiones", error);
             }
@@ -43,51 +44,60 @@ const FormAddAlumno = () => {
         const cargarEstadosCiviles = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/estadoCivil");
-                const formattedOptions = response.data.map(estadoCivil => ({
+                const ListaOpciones = response.data.map(estadoCivil => ({
                     value: estadoCivil.ID_EC,
                     label: estadoCivil.NOMBRE_EC,
                 }));
-
-                setEstadoCivilOptions(formattedOptions);
+                setEstadoCivilOptions(ListaOpciones);
             } catch (error) {
                 console.error("Error al cargar los estados civiles", error);
             }
         };
 
-        const cargarAulas = async () => {
+        const cargarAreasPe = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/aula");
-                const formattedOptions = response.data.map(aula => ({
-                    value: aula.ID_AULA,
-                    label: `${aula.ANIO} - ${aula.PERIODO} (${convertirRomanos(aula.CICLO)}) - ${aula.AREA_PE?.NOMBRE_AREA_PE}`,
+                const response = await axios.get("http://localhost:5000/areaPe");
+                const ListaOpciones = response.data.map(areaPe => ({
+                    value: areaPe.ID_AREA_PE,
+                    label: areaPe.NOMBRE_AREA_PE,
                 }));
-
-                setAulaOptions(formattedOptions);
+                setAreaPeOptions(ListaOpciones);
             } catch (error) {
-                console.error("Error al cargar las aulas", error);
+                console.error("Error al cargar las áreas PE", error);
             }
+        };
+
+        const cargarCiclos = () => {
+            const ciclos = [1, 2, 3, 4, 5, 6].map((ciclo) => ({
+                value: ciclo,
+                label: convertirRomanos(ciclo),
+            }));
+            setCicloOptions(ciclos);
         };
 
         cargarReligiones();
         cargarEstadosCiviles();
-        cargarAulas();
+        cargarAreasPe();
+        cargarCiclos();
     }, []);
 
     const saveAlumno = async (e) => {
         e.preventDefault();
         try {
             await axios.post("http://localhost:5000/alumno", {
-                DNI_ALUMNO: dni,
-                NOMBRE_ALUMNO: nombres,
-                APELLIDO_ALUMNO: apellidos,
+                DNI: dni,
+                NOMBRES: nombres,
+                APELLIDOS: apellidos,
                 SEXO: sexo,
                 TELEFONO: telefono,
                 ID_RELIGION: religion ? religion.value : null,
                 ID_EC: estadoCivil ? estadoCivil.value : null,
-                ID_AULA: aula ? aula.value : null,
-                DIRECCION_NACIMIENTO: direccionNacimiento,
-                FECHA_NACIMIENTO: fechaNacimiento,
+                ID_AREA_PE: areaPe ? areaPe.value : null, 
+                DIR_NAC: direccionNacimiento,
+                FECH_NAC: fechaNacimiento,
                 DOMICILIO: domicilio,
+                CICLO: ciclo ? ciclo.value : null, 
+                TURNO: turno,
             });
             navigate("/alumnos");
         } catch (error) {
@@ -112,7 +122,7 @@ const FormAddAlumno = () => {
 
             <div className="contenedor">
                 <form onSubmit={saveAlumno}>
-                    <p>{msg}</p>
+                <p style={{color:'red'}}> {msg}</p>
 
                     <div className="row">
                         <div className="col-25">
@@ -161,6 +171,53 @@ const FormAddAlumno = () => {
 
                     <div className="row">
                         <div className="col-25">
+                            <label className="label-form">Prog. Estudio</label>
+                        </div>
+                        <div className="col-75">
+                            <Select
+                                options={areaPeOptions}
+                                value={areaPe}
+                                onChange={setAreaPe}
+                                className="input-form"
+                                placeholder="Selecciona un programa de estudio"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Ciclo</label>
+                        </div>
+                        <div className="col-75">
+                            <Select
+                                options={cicloOptions}
+                                value={ciclo}
+                                onChange={setCiclo}
+                                className="input-form"
+                                placeholder="Selecciona un ciclo"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Turno</label>
+                        </div>
+                        <div className="col-75">
+                            <select
+                                className="input-form"
+                                value={turno}
+                                onChange={(e) => setTurno(e.target.value)}
+                            >
+                                <option value="M">Mañana</option>
+                                <option value="T">Tarde</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div className="row">
+                        <div className="col-25">
                             <label className="label-form">Sexo</label>
                         </div>
                         <div className="col-75">
@@ -174,7 +231,6 @@ const FormAddAlumno = () => {
                             </select>
                         </div>
                     </div>
-
 
                     <div className="row">
                         <div className="col-25">
@@ -221,20 +277,6 @@ const FormAddAlumno = () => {
                         </div>
                     </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Aula</label>
-                        </div>
-                        <div className="col-75">
-                            <Select
-                                options={aulaOptions}
-                                value={aula}
-                                onChange={setAula}
-                                className="input-form"
-                                placeholder="Selecciona un aula"
-                            />
-                        </div>
-                    </div>
 
                     <div className="row">
                         <div className="col-25">

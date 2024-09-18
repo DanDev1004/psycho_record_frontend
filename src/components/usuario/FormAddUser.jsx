@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
-import "../../assets/styles/Form.css"
+import "../../assets/styles/Form.css";
 
 const FormAddUser = () => {
   const [dni, setDni] = useState("");
@@ -9,11 +9,11 @@ const FormAddUser = () => {
   const [apellidos, setApellidos] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
   const [rol, setRole] = useState("");
   const [roles, setRoles] = useState([]);
-
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
@@ -26,12 +26,17 @@ const FormAddUser = () => {
         console.error("Error al cargar los roles", error);
       }
     };
-
     cargarRoles();
   }, []);
 
   const saveUser = async (e) => {
     e.preventDefault();
+
+    if (!dni || !nombres || !apellidos || !username || !email) {
+      setMsg("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
     try {
       await axios.post("http://localhost:5000/usuario", {
         DNI_USUARIO: dni,
@@ -39,8 +44,9 @@ const FormAddUser = () => {
         APELLIDO_USUARIO: apellidos,
         USERNAME: username,
         EMAIL: email,
-        USER_PASSWORD: password,
-        CONF_USER_PASSWORD: confPassword,
+        TELEFONO: telefono,
+        PASSWORD_USER: password,
+        CONFIRM_PASSWORD_USER: confPassword,
         ID_ROL: Number(rol),
       });
       navigate("/usuarios");
@@ -60,9 +66,8 @@ const FormAddUser = () => {
       <h1 className="title-form">Agregar Usuarios</h1>
 
       <div className="contenedor">
-
         <form onSubmit={saveUser}>
-          <p>{msg}</p>
+        <p style={{color:'red'}}>Error: {msg}</p>
 
           <div className="row">
             <div className="col-25">
@@ -70,11 +75,11 @@ const FormAddUser = () => {
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="text"
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
-                placeholder="dni"
+                placeholder="DNI"
               />
             </div>
           </div>
@@ -85,11 +90,11 @@ const FormAddUser = () => {
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="text"
                 value={nombres}
                 onChange={(e) => setNombres(e.target.value)}
-                placeholder="nombres"
+                placeholder="Nombres"
               />
             </div>
           </div>
@@ -100,26 +105,26 @@ const FormAddUser = () => {
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="text"
                 value={apellidos}
                 onChange={(e) => setApellidos(e.target.value)}
-                placeholder="apellidos"
+                placeholder="Apellidos"
               />
             </div>
           </div>
 
           <div className="row">
             <div className="col-25">
-              <label className="label-form">username</label>
+              <label className="label-form">Username</label>
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="username"
+                placeholder="Username"
               />
             </div>
           </div>
@@ -130,21 +135,37 @@ const FormAddUser = () => {
             </div>
             <div className="col-75">
               <input
-              className="input-form"
-                type="text"
+                className="input-form"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="correo@email.com"
               />
             </div>
           </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Teléfono</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="987654321"
+              />
+            </div>
+          </div>
+
           <div className="row">
             <div className="col-25">
               <label className="label-form">Password</label>
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -159,7 +180,7 @@ const FormAddUser = () => {
             </div>
             <div className="col-75">
               <input
-              className="input-form"
+                className="input-form"
                 type="password"
                 value={confPassword}
                 onChange={(e) => setConfPassword(e.target.value)}
@@ -168,18 +189,17 @@ const FormAddUser = () => {
             </div>
           </div>
 
-          <div>
+          <div className="row">
             <div className="col-25">
               <label className="label-form">Rol</label>
             </div>
-
             <div className="col-75">
-
               <select
+                className="input-form"
                 value={rol}
                 onChange={(e) => setRole(e.target.value)}
               >
-                <option>Seleccionar un rol </option>
+                <option value="">Seleccionar un rol</option>
                 {roles.map((role) => (
                   <option key={role.ID_ROL} value={role.ID_ROL}>
                     {role.NOMBRE_ROL}
@@ -190,15 +210,12 @@ const FormAddUser = () => {
           </div>
 
           <div className="row">
-            <button className="button-form" type="submit">Guardar</button>
+            <button className="button-form" type="submit">
+              Guardar
+            </button>
           </div>
-
         </form>
-
-
       </div>
-
-
     </div>
   );
 };

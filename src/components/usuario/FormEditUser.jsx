@@ -10,9 +10,10 @@ const FormEditUser = () => {
   const [apellidos, setApellidos] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
-  const [rol, setRole] = useState("");
+  const [rol, setRol] = useState("");
   const [roles, setRoles] = useState([]);
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const FormEditUser = () => {
   const { user } = useSelector((state) => state.auth); 
 
   useEffect(() => {
-    const getUserById = async () => {
+    const obtenerPorId = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/usuario/${id}`);
         setDni(response.data.DNI_USUARIO);
@@ -29,9 +30,10 @@ const FormEditUser = () => {
         setApellidos(response.data.APELLIDO_USUARIO);
         setUsername(response.data.USERNAME);
         setEmail(response.data.EMAIL);
+        setTelefono(response.data.TELEFONO);
         setPassword(""); 
         setConfPassword("");
-        setRole(response.data.ID_ROL);
+        setRol(response.data.ID_ROL);
       } catch (error) {
         if (error.response) {
           setMsg(error.response.data.msg);
@@ -48,11 +50,12 @@ const FormEditUser = () => {
       }
     };
 
-    getUserById();
+    obtenerPorId();
     cargarRoles();
   }, [id]);
 
-  const updateUser = async (e) => {
+
+  const actualizar = async (e) => {
     e.preventDefault();
     try {
       await axios.patch(`http://localhost:5000/usuario/${id}`, {
@@ -61,8 +64,9 @@ const FormEditUser = () => {
         APELLIDO_USUARIO: apellidos,
         USERNAME: username,
         EMAIL: email,
-        USER_PASSWORD: password || null,
-        CONF_USER_PASSWORD: confPassword || null,
+        TELEFONO: telefono,
+        PASSWORD_USER: password || null,
+        CONFIRM_PASSWORD_USER: confPassword || null,
         ID_ROL: Number(rol),
       });
       navigate("/usuarios");
@@ -83,12 +87,12 @@ const FormEditUser = () => {
 
       <div className="contenedor">
 
-        <form onSubmit={updateUser}>
-          <p>{msg}</p>
+        <form onSubmit={actualizar}>
+          <p style={{color:'red'}}> {msg}</p>
 
           <div className="row">
             <div className="col-25">
-              <label className="label-form">DNI</label>
+              <label className="label-form">DNI</label>            
             </div>
             <div className="col-75">
               <input
@@ -163,6 +167,21 @@ const FormEditUser = () => {
 
           <div className="row">
             <div className="col-25">
+              <label className="label-form">Telefono</label>
+            </div>
+            <div className="col-75">
+              <input
+                className="input-form"
+                type="text"
+                value={telefono || ""}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="987654321"
+              />
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-25">
               <label className="label-form">Password</label>
             </div>
             <div className="col-75">
@@ -200,7 +219,7 @@ const FormEditUser = () => {
                 <select
                   className="input-form"
                   value={rol || ""}
-                  onChange={(e) => setRole(e.target.value)}
+                  onChange={(e) => setRol(e.target.value)}
                 >
                   <option value="">Seleccione un rol</option>
                   {roles.map((role) => (

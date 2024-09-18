@@ -20,8 +20,8 @@ const UsuarioList = () => {
   const obtenerTodos = async () => {
     try {
       const response = await axios.get("http://localhost:5000/usuario");
-      const filteredUsers = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
-      setUsers(filteredUsers); 
+      const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
+      setUsers(filtrarUsuarios); 
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
     }
@@ -29,11 +29,11 @@ const UsuarioList = () => {
 
   const buscarUsuario = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/buscarUsuario", {
+      const response = await axios.post("http://localhost:5000/usuario/buscar", {
         searchText: searchText.trim()
       });
-      const filteredUsers = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
-      setUsers(filteredUsers); 
+      const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
+      setUsers(filtrarUsuarios); 
     } catch (error) {
       console.error("Error al buscar usuarios:", error);
     }
@@ -76,6 +76,11 @@ const UsuarioList = () => {
       {
         Header: 'USERNAME',
         accessor: 'USERNAME',
+      },
+      
+      {
+        Header: 'TELEFONO',
+        accessor: 'TELEFONO',
       },
       {
         Header: 'ROL',

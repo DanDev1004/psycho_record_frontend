@@ -8,6 +8,7 @@ const FormEditAlumno = () => {
     const [dni, setDni] = useState("");
     const [nombres, setNombres] = useState("");
     const [apellidos, setApellidos] = useState("");
+    const [areaPe, setAreaPe] = useState(null); 
     const [sexo, setSexo] = useState("M");
     const [telefono, setTelefono] = useState("");
     const [religion, setReligion] = useState(null);
@@ -15,9 +16,13 @@ const FormEditAlumno = () => {
     const [direccionNacimiento, setDireccionNacimiento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [domicilio, setDomicilio] = useState("");
+    const [ciclo, setCiclo] = useState(null); 
+    const [turno, setTurno] = useState("M");
 
     const [religionOptions, setReligionOptions] = useState([]);
     const [estadoCivilOptions, setEstadoCivilOptions] = useState([]);
+    const [areaPeOptions, setAreaPeOptions] = useState([]);
+    const [cicloOptions, setCicloOptions] = useState([]); 
 
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
@@ -27,9 +32,9 @@ const FormEditAlumno = () => {
         const getAlumnoById = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/alumno/${id}`);
-                setDni(response.data.DNI_ALUMNO);
-                setNombres(response.data.NOMBRE_ALUMNO);
-                setApellidos(response.data.APELLIDO_ALUMNO);
+                setDni(response.data.DNI);
+                setNombres(response.data.NOMBRES);
+                setApellidos(response.data.APELLIDOS);
                 setSexo(response.data.SEXO);
                 setTelefono(response.data.TELEFONO);
                 setReligion({
@@ -40,10 +45,19 @@ const FormEditAlumno = () => {
                     value: response.data.ID_EC,
                     label: response.data.ESTADO_CIVIL?.NOMBRE_EC,
                 });
-                setDireccionNacimiento(response.data.DIRECCION_NACIMIENTO);
-
-                const fechaNacimientoFormateada = response.data.FECHA_NACIMIENTO
-                    ? new Date(response.data.FECHA_NACIMIENTO).toISOString().split("T")[0]
+                setAreaPe({
+                    value: response.data.ID_AREA_PE,
+                    label: response.data.AREA_PE?.NOMBRE_AREA_PE,
+                });
+                setDireccionNacimiento(response.data.DIR_NAC);
+                setCiclo({
+                    value: response.data.CICLO,
+                    label: convertirRomanos(response.data.CICLO),
+                });
+                setTurno(response.data.TURNO);
+                
+                const fechaNacimientoFormateada = response.data.FECH_NAC
+                    ? new Date(response.data.FECH_NAC).toISOString().split("T")[0]
                     : "";
 
                 setFechaNacimiento(fechaNacimientoFormateada);
@@ -81,24 +95,50 @@ const FormEditAlumno = () => {
             }
         };
 
+        const cargarAreasPe = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/areaPe");
+                const options = response.data.map((areaPe) => ({
+                    value: areaPe.ID_AREA_PE,
+                    label: areaPe.NOMBRE_AREA_PE,
+                }));
+                setAreaPeOptions(options);
+            } catch (error) {
+                console.error("Error al cargar las áreas PE", error);
+            }
+        };
+
+        const cargarCiclos = () => {
+            const ciclos = [1, 2, 3, 4, 5, 6].map((ciclo) => ({
+                value: ciclo,
+                label: convertirRomanos(ciclo),
+            }));
+            setCicloOptions(ciclos);
+        };
+
         getAlumnoById();
         cargarReligiones();
         cargarEstadosCiviles();
+        cargarAreasPe();
+        cargarCiclos(); 
     }, [id]);
 
     const updateAlumno = async (e) => {
         e.preventDefault();
         try {
             await axios.patch(`http://localhost:5000/alumno/${id}`, {
-                DNI_ALUMNO: dni,
-                NOMBRE_ALUMNO: nombres,
-                APELLIDO_ALUMNO: apellidos,
+                DNI: dni,
+                NOMBRES: nombres,
+                APELLIDOS: apellidos,
                 SEXO: sexo,
                 TELEFONO: telefono,
                 ID_RELIGION: religion?.value,
                 ID_EC: estadoCivil?.value,
-                DIRECCION_NACIMIENTO: direccionNacimiento,
-                FECHA_NACIMIENTO: fechaNacimiento,
+                ID_AREA_PE: areaPe?.value,
+                CICLO: ciclo?.value, 
+                TURNO: turno, 
+                DIR_NAC: direccionNacimiento,
+                FECH_NAC: fechaNacimiento,
                 DOMICILIO: domicilio,
             });
             navigate("/alumnos");
@@ -107,6 +147,11 @@ const FormEditAlumno = () => {
                 setMsg(error.response.data.msg);
             }
         }
+    };
+
+    const convertirRomanos = (num) => {
+        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        return numerosRomanos[num - 1] || num;
     };
 
     return (
@@ -119,7 +164,7 @@ const FormEditAlumno = () => {
 
             <div className="contenedor">
                 <form onSubmit={updateAlumno}>
-                    <p>{msg}</p>
+                <p style={{color:'red'}}> {msg}</p>
 
                     <div className="row">
                         <div className="col-25">
@@ -168,6 +213,21 @@ const FormEditAlumno = () => {
 
                     <div className="row">
                         <div className="col-25">
+                            <label className="label-form">Área PE</label>
+                        </div>
+                        <div className="col-75">
+                            <Select
+                                className="input-form"
+                                value={areaPe}
+                                onChange={setAreaPe}
+                                options={areaPeOptions}
+                                placeholder="Selecciona un área PE"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-25">
                             <label className="label-form">Sexo</label>
                         </div>
                         <div className="col-75">
@@ -181,7 +241,6 @@ const FormEditAlumno = () => {
                             </select>
                         </div>
                     </div>
-
 
                     <div className="row">
                         <div className="col-25">
@@ -225,6 +284,37 @@ const FormEditAlumno = () => {
                                 options={estadoCivilOptions}
                                 placeholder="Selecciona un estado civil"
                             />
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Ciclo</label>
+                        </div>
+                        <div className="col-75">
+                            <Select
+                                className="input-form"
+                                value={ciclo}
+                                onChange={setCiclo}
+                                options={cicloOptions}
+                                placeholder="Selecciona un ciclo"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Turno</label>
+                        </div>
+                        <div className="col-75">
+                            <select
+                                className="input-form"
+                                value={turno || "M"}
+                                onChange={(e) => setTurno(e.target.value)}
+                            >
+                                <option value="M">Mañana</option>
+                                <option value="T">Tarde</option>
+                            </select>
                         </div>
                     </div>
 

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import "../../assets/styles/Form.css";  
+import "../../assets/styles/Form.css";
 
 const FormEditConsultasPs = () => {
+    const [consulta, setConsulta] = useState(null);
+    const [alumno, setAlumno] = useState("");
+    const [tutor, setTutor] = useState("");
     const [fechaAtencion, setFechaAtencion] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
     const [horaFin, setHoraFin] = useState("");
@@ -22,18 +25,29 @@ const FormEditConsultasPs = () => {
         const cargarDatos = async () => {
             try {
                 const consultaResponse = await axios.get(`http://localhost:5000/consulta/${id}`);
-                const consulta = consultaResponse.data;
+                const consultaData = consultaResponse.data;
 
-                setFechaAtencion(formatDate(consulta.FECHA_ATENCION));
-                setHoraInicio(consulta.HORA_INICIO);
-                setHoraFin(consulta.HORA_FIN);
-                setAsistencia(consulta.ASISTENCIA);
-                setMotivo(consulta.MOTIVO);
-                setProblema(consulta.PROBLEMA);
-                setRecomendacion(consulta.RECOMENDACION);
-                setAspectoFisico(consulta.ASPECTO_FISICO);
-                setAseoPersonal(consulta.ASEO_PERSONAL);
-                setConducta(consulta.CONDUCTA);
+                setConsulta(consultaData);
+                setFechaAtencion(formatearFecha(consultaData.FECHA_ATENCION));
+                setHoraInicio(consultaData.HORA_INICIO);
+                setHoraFin(consultaData.HORA_FIN);
+                setAsistencia(consultaData.ASISTENCIA);
+                setMotivo(consultaData.MOTIVO);
+                setProblema(consultaData.PROBLEMA);
+                setRecomendacion(consultaData.RECOMENDACION);
+                setAspectoFisico(consultaData.ASPECTO_FISICO);
+                setAseoPersonal(consultaData.ASEO_PERSONAL);
+                setConducta(consultaData.CONDUCTA);
+
+                if (consultaData.TIPO_DERIVACION === 1 || consultaData.TIPO_DERIVACION === 2) {
+                    setAlumno(`${consultaData.ALUMNO.NOMBRES} ${consultaData.ALUMNO.APELLIDOS}`);
+                    setTutor(`${consultaData.USUARIO.NOMBRE_USUARIO} ${consultaData.DERIVACION.USUARIO.APELLIDO_USUARIO}`);
+                }
+
+                if (consultaData.TIPO_DERIVACION === 3) {
+                    setAlumno(`${consultaData.ALUMNO.NOMBRES} ${consultaData.ALUMNO.APELLIDOS}`);
+                    setTutor(`${consultaData.DERIVACION.USUARIO.NOMBRE_USUARIO} ${consultaData.DERIVACION.USUARIO.APELLIDO_USUARIO}`);
+                }
             } catch (error) {
                 console.error("Error al cargar datos", error);
             }
@@ -42,11 +56,11 @@ const FormEditConsultasPs = () => {
         cargarDatos();
     }, [id]);
 
-    const formatDate = (dateString) => {
+    const formatearFecha = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
+        const day = String(date.getDate() + 1).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
 
@@ -59,11 +73,11 @@ const FormEditConsultasPs = () => {
                 HORA_FIN: horaFin,
                 ASISTENCIA: asistencia,
                 MOTIVO: motivo,
-                PROBLEMA: problema,
-                RECOMENDACION: recomendacion,
-                ASPECTO_FISICO: aspectoFisico,
-                ASEO_PERSONAL: aseoPersonal,
-                CONDUCTA: conducta,
+                PROBLEMA: asistencia === 2 ? problema : "",
+                RECOMENDACION: asistencia === 2 ? recomendacion : "",
+                ASPECTO_FISICO: asistencia === 2 ? aspectoFisico : "",
+                ASEO_PERSONAL: asistencia === 2 ? aseoPersonal : "",
+                CONDUCTA: asistencia === 2 ? conducta : "",
             });
             navigate("/consultasps");
         } catch (error) {
@@ -82,6 +96,38 @@ const FormEditConsultasPs = () => {
             <div className="contenedor">
                 <form onSubmit={actualizarConsulta}>
                     <p className="msg">{msg}</p>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Alumno: </label>
+                        </div>
+                        <div className="col-75">
+                            <input
+                                type="text"
+                                className="input-form"
+                                value={alumno}
+                                readOnly
+                                style={{ border: "none", pointerEvents: "none" }}
+                            />
+                        </div>
+                    </div>
+
+                    {consulta?.TIPO_DERIVACION === 3 && (
+                        <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Tutor: </label>
+                        </div>
+                        <div className="col-75">
+                            <input
+                                type="text"
+                                className="input-form"
+                                value={tutor}
+                                readOnly
+                                style={{ border: "none", pointerEvents: "none" }}
+                            />
+                        </div>
+                    </div>
+                    )}
 
                     <div className="row">
                         <div className="col-25">
@@ -136,12 +182,11 @@ const FormEditConsultasPs = () => {
                             <select
                                 className="input-form"
                                 value={asistencia}
-                                onChange={(e) => setAsistencia(e.target.value)}
+                                onChange={(e) => setAsistencia(parseInt(e.target.value))}
                                 required
                             >
                                 <option value={1}>Pendiente</option>
                                 <option value={2}>Asistido</option>
-                                <option value={3}>No Asistido</option>
                             </select>
                         </div>
                     </div>
@@ -155,74 +200,79 @@ const FormEditConsultasPs = () => {
                                 className="input-form"
                                 value={motivo}
                                 onChange={(e) => setMotivo(e.target.value)}
+                                required
                             />
                         </div>
                     </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Problema</label>
-                        </div>
-                        <div className="col-75">
-                            <textarea
-                                className="input-form"
-                                value={problema}
-                                onChange={(e) => setProblema(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    {asistencia === 2 && (
+                        <>
+                            <div className="row">
+                                <div className="col-25">
+                                    <label className="label-form">Problema</label>
+                                </div>
+                                <div className="col-75">
+                                    <textarea
+                                        className="input-form"
+                                        value={problema}
+                                        onChange={(e) => setProblema(e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Recomendación</label>
-                        </div>
-                        <div className="col-75">
-                            <textarea
-                                className="input-form"
-                                value={recomendacion}
-                                onChange={(e) => setRecomendacion(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                            <div className="row">
+                                <div className="col-25">
+                                    <label className="label-form">Recomendación</label>
+                                </div>
+                                <div className="col-75">
+                                    <textarea
+                                        className="input-form"
+                                        value={recomendacion}
+                                        onChange={(e) => setRecomendacion(e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Aspecto Físico</label>
-                        </div>
-                        <div className="col-75">
-                            <textarea
-                                className="input-form"
-                                value={aspectoFisico}
-                                onChange={(e) => setAspectoFisico(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                            <div className="row">
+                                <div className="col-25">
+                                    <label className="label-form">Aspecto Físico</label>
+                                </div>
+                                <div className="col-75">
+                                    <textarea
+                                        className="input-form"
+                                        value={aspectoFisico}
+                                        onChange={(e) => setAspectoFisico(e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Aseo Personal</label>
-                        </div>
-                        <div className="col-75">
-                            <textarea
-                                className="input-form"
-                                value={aseoPersonal}
-                                onChange={(e) => setAseoPersonal(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                            <div className="row">
+                                <div className="col-25">
+                                    <label className="label-form">Aseo Personal</label>
+                                </div>
+                                <div className="col-75">
+                                    <textarea
+                                        className="input-form"
+                                        value={aseoPersonal}
+                                        onChange={(e) => setAseoPersonal(e.target.value)}
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="row">
-                        <div className="col-25">
-                            <label className="label-form">Conducta</label>
-                        </div>
-                        <div className="col-75">
-                            <textarea
-                                className="input-form"
-                                value={conducta}
-                                onChange={(e) => setConducta(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                            <div className="row">
+                                <div className="col-25">
+                                    <label className="label-form">Conducta</label>
+                                </div>
+                                <div className="col-75">
+                                    <textarea
+                                        className="input-form"
+                                        value={conducta}
+                                        onChange={(e) => setConducta(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     <div className="row">
                         <button className="button-form" type="submit">Guardar</button>

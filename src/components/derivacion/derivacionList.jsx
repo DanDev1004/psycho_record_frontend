@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 import { IonIcon } from "@ionic/react";
 import { searchOutline } from "ionicons/icons";
 import { useTable, usePagination } from 'react-table';
+import { useSelector } from 'react-redux'; // Importar useSelector
 
 const DerivacionList = () => {
     const [derivaciones, setDerivaciones] = useState([]);
     const [searchText, setSearchText] = useState("");
+    const { user } = useSelector((state) => state.auth); // Obtener información del usuario
 
     useEffect(() => {
         obtenerDerivaciones();
@@ -16,6 +18,7 @@ const DerivacionList = () => {
     const obtenerDerivaciones = async () => {
         try {
             const response = await axios.get("http://localhost:5000/derivacion");
+
             setDerivaciones(response.data);
         } catch (error) {
             console.error("Error al obtener las derivaciones", error);
@@ -24,7 +27,7 @@ const DerivacionList = () => {
 
     const buscarDerivacion = async () => {
         try {
-            const response = await axios.post("http://localhost:5000/buscarDerivacion", {
+            const response = await axios.post("http://localhost:5000/derivacion/buscar", {
                 searchText: searchText,
             });
             setDerivaciones(response.data);
@@ -50,72 +53,87 @@ const DerivacionList = () => {
     };
 
     const columns = useMemo(
-        () => [
-            {
-                Header: 'N°',
-                Cell: ({ row }) => row.index + 1,
-            },
-            {
-                Header: 'Remitente',
-                accessor: 'USUARIO',
-                Cell: ({ value }) =>
-                    value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "No asignado",
-            },
-            {
-                Header: 'Alumno',
-                accessor: 'LISTADO_AULA.ALUMNO',
-                Cell: ({ value }) =>
-                    value ? `${value.NOMBRE_ALUMNO} ${value.APELLIDO_ALUMNO}` : "No asignado",
-            },
-            {
-                Header: 'Fecha Derivación',
-                accessor: 'createdAt',
-                Cell: ({ value }) => value ? new Date(value).toLocaleDateString() : "Fecha no disponible",
-            },
-            {
-                Header: 'Motivo',
-                accessor: 'MOTIVO',
-            },
-            {
-                Header: 'Severidad',
-                accessor: 'SEVERIDAD',
-                Cell: ({ value }) =>
-                    value === 1
-                        ? "Baja"
-                        : value === 2
-                            ? "Media"
-                            : value === 3
-                                ? "Alta"
-                                : "Severidad desconocida",
-            },
-            {
-                Header: 'Estado',
-                accessor: 'ESTADO',
-                Cell: ({ value }) => (value ? "Aprobado" : "Pendiente"),
-            },
-            {
-                Header: 'Acciones',
-                Cell: ({ row }) => (
-                    <>
-                        <Link
-                            className="btn-edit"
-                            to={`/derivacion/edit/${row.original.ID_DERIVACION}`}
-                            disabled={row.original.ESTADO}
-                            style={{ pointerEvents: row.original.ESTADO ? 'none' : 'auto', background: row.original.ESTADO ? '#ddcfa6' : '' }}
-                        >
-                            Editar
-                        </Link>
-                        <Link
-                            className="btn-delete"
-                            onClick={() => eliminarDerivacion(row.original.ID_DERIVACION)}
-                        >
-                            Eliminar
-                        </Link>
-                    </>
-                ),
-            },
-        ],
-        []
+        () => {
+            const cols = [
+                {
+                    Header: 'N°',
+                    Cell: ({ row }) => row.index + 1,
+                },
+                {
+                    Header: 'ALUMNO',
+                    accessor: 'ALUMNO',
+                    Cell: ({ value }) =>
+                        value ? `${value.NOMBRES} ${value.APELLIDOS}` : "No asignado",
+                },
+                {
+                    Header: 'MOTIVO',
+                    accessor: 'MOTIVO',
+                },
+                {
+                    Header: () => (
+                        <div style={{ marginRight: '10px' }}>
+                            URGENCIA
+                        </div>
+                    ),
+                    accessor: 'URGENCIA',
+                    Cell: ({ value }) =>
+                        value === 1
+                            ? "Baja"
+                            : value === 2
+                                ? "Media"
+                                : value === 3
+                                    ? "Alta"
+                                    : "Desconocida",
+                },
+                {
+                    Header: 'ESTADO',
+                    accessor: 'RECIBIDO',
+                    Cell: ({ value }) => (value ? "RECIBIDO" : "EN ESPERA"),
+                },
+                {
+                    Header: 'ACCIONES',
+                    Cell: ({ row }) => (
+                        <>
+                            {row.original.RECIBIDO ? (
+                                <Link
+                                    className="btn-details"
+                                    to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
+                                >
+                                    Detalles
+                                </Link>
+
+                            ) : (
+                                    <Link
+                                        className="btn-edit"
+                                        to={`/derivacion/edit/${row.original.ID_DERIVACION}`}
+                                    >
+                                        Editar
+                                    </Link>
+                                   
+                            )}
+                             <Link
+                                        className="btn-delete"
+                                        onClick={() => eliminarDerivacion(row.original.ID_DERIVACION)}
+                                    >
+                                        Eliminar
+                                    </Link>
+                        </>
+                    ),
+                },
+            ];
+
+            if (user?.ID_ROL !== 3) {
+                cols.splice(1, 0, {
+                    Header: 'REMITENTE',
+                    accessor: 'USUARIO',
+                    Cell: ({ value }) =>
+                        value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "No asignado",
+                });
+            }
+
+            return cols;
+        },
+        [derivaciones, user] 
     );
 
     const data = useMemo(() => derivaciones, [derivaciones]);
@@ -150,7 +168,7 @@ const DerivacionList = () => {
                     <label>
                         <input
                             type="text"
-                            placeholder="Nombres o apellidos"
+                            placeholder="Buscar alumno por nombre o apellidos"
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
                             onKeyDown={detectarEnter}

@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { LoginUser, reset } from "../features/authSlice";
 import wave from "../assets/images/wave2.png"
 import welcome from "../assets/images/welcome.svg"
-import avatar from "../assets/images/avatar.svg"
+//import avatar from "../assets/images/avatar.svg"
+import logo from "../assets/images/logo.png";
 import "../assets/styles/login.css"
 
 import { IonIcon } from '@ionic/react';
@@ -46,7 +47,7 @@ const Login = () => {
 
         <div className="login-content">
           <form onSubmit={Auth} className="form-login">
-            <img src={avatar} />
+            <img src={logo} />
             {isError && <p>{message}</p>}
             <h2 className="title-welcome">Bienvenido</h2>
 

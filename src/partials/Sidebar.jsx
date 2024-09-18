@@ -8,10 +8,6 @@ import {
   peopleOutline,
   schoolOutline,
   lockClosedOutline,
-  peopleCircleOutline,
-  ribbonOutline,
-  businessOutline,
-  heartCircleOutline
 } from "ionicons/icons";
 
 import logo from "../assets/images/logo.png";
@@ -47,9 +43,13 @@ const Sidebar = ({ isActive }) => {
   return (
     <aside className={`navegacion  ${isActive ? "activado" : ""}`}
       style={{ overflow: "auto", scrollbarWidth: "none" }} >
+
       <div>
+
         <ul>
+
           <li>
+            {/*LOGO*/}
             <NavLink>
               <span className="icon">
                 <img src={logo} style={{ height: "40px", marginTop: "10px" }} alt="tecnologo" />
@@ -58,7 +58,7 @@ const Sidebar = ({ isActive }) => {
             </NavLink>
           </li>
 
-
+          {/*DASHBOARD*/}
           <li ref={(el) => setRef("dashboard", el)} onMouseOver={() => handleMouseOver("dashboard")}>
             <NavLink to={"/dashboard"}>
               <span className="icon">
@@ -68,6 +68,7 @@ const Sidebar = ({ isActive }) => {
             </NavLink>
           </li>
 
+          {/*USUARIOS*/}
           {user && user.ID_ROL === 1 && (
             <li ref={(el) => setRef("usuarios", el)} onMouseOver={() => handleMouseOver("usuarios")}>
               <NavLink to={"/usuarios"}>
@@ -79,7 +80,9 @@ const Sidebar = ({ isActive }) => {
             </li>
           )}
 
-          {user && user.ID_ROL === 1 && (
+
+          {/*ALUMNOS*/}
+          {user && (user.ID_ROL === 1 || user.ID_ROL === 2 || user.ID_ROL === 3) && (
             <li ref={(el) => setRef("alumnos", el)} onMouseOver={() => handleMouseOver("alumnos")}>
               <NavLink to={"/alumnos"}>
                 <span className="icon">
@@ -90,60 +93,23 @@ const Sidebar = ({ isActive }) => {
             </li>
           )}
 
-          {user && user.ID_ROL === 1 && (
-            <li ref={(el) => setRef("instructores", el)} onMouseOver={() => handleMouseOver("instructores")}>
-              <NavLink to={"/instructores"}>
+
+          {/*DERIVACIONES*/}
+          {user && (user.ID_ROL === 1 || user.ID_ROL === 3)  && (
+              <li ref={(el) => setRef("derivaciones", el)} onMouseOver={() => handleMouseOver("derivaciones")}>
+              <NavLink to={"/derivaciones"}>
                 <span className="icon">
-                  <IonIcon icon={peopleCircleOutline} />
+                  <IonIcon icon={mailOutline} />
                 </span>
-                <span className="title">Instructores</span>
+                <span className="title">Derivaciones</span>
               </NavLink>
             </li>
+  
           )}
+        
 
-          {user && user.ID_ROL === 1 && (
-            <li ref={(el) => setRef("tutores", el)} onMouseOver={() => handleMouseOver("tutores")}>
-              <NavLink to={"/tutores"}>
-                <span className="icon">
-                  <IonIcon icon={ribbonOutline} />
-                </span>
-                <span className="title">Asignaturas de aula</span>
-              </NavLink>
-            </li>
-          )}
-
-          {user && user.ID_ROL === 1 && (
-            <li ref={(el) => setRef("listadoAula", el)} onMouseOver={() => handleMouseOver("listadoAula")}>
-              <NavLink to={"/listadoAula"}>
-                <span className="icon">
-                  <IonIcon icon={businessOutline} />
-                </span>
-                <span className="title">Listados de Aula</span>
-              </NavLink>
-            </li>
-          )}
-
-          {user && user.ID_ROL === 1 && (
-            <li ref={(el) => setRef("familiar", el)} onMouseOver={() => handleMouseOver("familiar")}>
-              <NavLink to={"/familiar"}>
-                <span className="icon">
-                  <IonIcon icon={heartCircleOutline} />
-                </span>
-                <span className="title">Registro Familiar</span>
-              </NavLink>
-            </li>
-          )}
-
-          <li ref={(el) => setRef("derivaciones", el)} onMouseOver={() => handleMouseOver("derivaciones")}>
-            <NavLink to={"/derivaciones"}>
-              <span className="icon">
-                <IonIcon icon={mailOutline} />
-              </span>
-              <span className="title">Derivaciones</span>
-            </NavLink>
-          </li>
-
-          {user && user.ID_ROL === 1 && (
+          {/*CONSULTAS */}
+          {user && (user.ID_ROL === 1 || user.ID_ROL === 2 )  && (
             <li ref={(el) => setRef("consultasps", el)} onMouseOver={() => handleMouseOver("consultasps")}>
               <NavLink to={"/consultasps"}>
                 <span className="icon">
