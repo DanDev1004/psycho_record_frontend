@@ -1,0 +1,6 @@
+====FRONTEND========
+
+npx create-react-app frontend --template redux
+npm i react-router-dom axios @ionic/react ionicons react-select react-table 
+npm install jspdf
+npm install jspdf-autotable

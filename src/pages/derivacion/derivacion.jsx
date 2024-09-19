@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Layout from "../Layout";
-import DerivacionList from "../../components/derivacion/DerivacionList";
+import DerivacionList from "../../components/derivacion/derivacionList";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../../features/authSlice";
