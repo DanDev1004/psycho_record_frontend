@@ -56,7 +56,7 @@ const DetailsDerivacion = () => {
             <div className="contenedor">
                 <div className="row">
                     <div className="col-25">
-                        <strong>Remitente (Usuario):</strong>
+                        <strong>Remitente:</strong>
                     </div>
                     <div className="col-75">
                         {derivacion.USUARIO?.NOMBRE_USUARIO} {derivacion.USUARIO?.APELLIDO_USUARIO}

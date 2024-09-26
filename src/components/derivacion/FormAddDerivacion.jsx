@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { NavLink, useNavigate, useParams } from "react-router-dom"; // Importar useParams
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import { useSelector } from "react-redux";
 import "../../assets/styles/Form.css";
 
 const FormAddDerivacion = () => {
-    const { user } = useSelector((state) => state.auth); // Obtener información del usuario autenticado
+    const { user } = useSelector((state) => state.auth); 
     const [usuarios, setUsuarios] = useState([]);
     const [alumnos, setAlumnos] = useState([]);
     const [usuario, setUsuario] = useState(null);
@@ -15,7 +15,7 @@ const FormAddDerivacion = () => {
     const [urgencia, setUrgencia] = useState(1);
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
-    const { idAlumno } = useParams(); // Capturar el ID del alumno desde la URL
+    const { idAlumno } = useParams();
 
     useEffect(() => {
         const cargarUsuariosDocentes = async () => {
@@ -38,11 +38,11 @@ const FormAddDerivacion = () => {
                 const response = await axios.get("http://localhost:5000/alumno");
                 const alumnoOptions = response.data.map((alumno) => ({
                     value: alumno.ID_ALUMNO,
-                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS}`,
+                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE?.NOMBRE_AREA_PE}`,
                 }));
                 setAlumnos(alumnoOptions);
 
-                // Seleccionar automáticamente el alumno basado en el ID capturado en la URL
+                
                 const alumnoSeleccionado = alumnoOptions.find(
                     (alumno) => alumno.value === parseInt(idAlumno)
                 );
@@ -56,10 +56,9 @@ const FormAddDerivacion = () => {
 
         cargarUsuariosDocentes();
         cargarAlumnos();
-    }, [idAlumno]); // Dependencia en idAlumno para recargar los datos cuando cambie
+    }, [idAlumno]);
 
     useEffect(() => {
-        // Si el usuario tiene rol 3, automáticamente seleccionamos al usuario conectado
         if (user?.ID_ROL === 3) {
             setUsuario({
                 value: user.ID_USUARIO,
@@ -135,6 +134,7 @@ const FormAddDerivacion = () => {
                                 placeholder="Selecciona un alumno"
                                 className="input-form"
                                 isClearable
+                                isDisabled={!!idAlumno}
                                 required
                             />
                         </div>

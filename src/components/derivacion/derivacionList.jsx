@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 import { IonIcon } from "@ionic/react";
 import { searchOutline } from "ionicons/icons";
 import { useTable, usePagination } from 'react-table';
-import { useSelector } from 'react-redux'; // Importar useSelector
-
+import { useSelector } from 'react-redux';
 const DerivacionList = () => {
     const [derivaciones, setDerivaciones] = useState([]);
     const [searchText, setSearchText] = useState("");
-    const { user } = useSelector((state) => state.auth); // Obtener información del usuario
+    const { user } = useSelector((state) => state.auth); 
 
     useEffect(() => {
         obtenerDerivaciones();

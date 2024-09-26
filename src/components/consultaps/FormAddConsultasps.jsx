@@ -29,9 +29,7 @@ const FormAddConsultasPs = () => {
     const [conducta, setConducta] = useState("");
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
-    const { idAlumno } = useParams(); // Capturar el parámetro ID_ALUMNO de la URL
-
-    // useEffect para cargar datos y seleccionar el alumno desde el parámetro de URL
+    const { idAlumno } = useParams();
     useEffect(() => {
         const cargarDatos = async () => {
             try {
@@ -40,13 +38,12 @@ const FormAddConsultasPs = () => {
 
                 const alumnosOptions = alumnosResponse.data.map(alumno => ({
                     value: alumno.ID_ALUMNO,
-                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS}`,
+                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno?.AREA_PE.NOMBRE_AREA_PE}`,
                 }));
 
                 setAlumnos(alumnosOptions);
                 setDerivaciones(derivacionesResponse.data);
 
-                // Seleccionar automáticamente el alumno basado en el ID capturado en la URL
                 if (idAlumno) {
                     const alumnoSeleccionado = alumnosOptions.find(
                         (alumno) => alumno.value === parseInt(idAlumno)
@@ -63,7 +60,6 @@ const FormAddConsultasPs = () => {
         cargarDatos();
     }, [idAlumno]);
 
-    // useEffect para manejar cambios cuando tipoDerivacion es 3 y se selecciona una derivación
     useEffect(() => {
         if (tipoDerivacion === 3 && derivacion) {
             const derivacionSeleccionada = derivaciones.find(
@@ -81,7 +77,6 @@ const FormAddConsultasPs = () => {
                 setMotivo(derivacionSeleccionada.MOTIVO);
             }
         } else if (tipoDerivacion === 3) {
-            // Si tipoDerivacion es 3 pero no hay derivación seleccionada, limpiar los campos
             setAlumno(null);
             setMotivo("");
         }
@@ -148,6 +143,7 @@ const FormAddConsultasPs = () => {
                                 className="input-form"
                                 value={tipoDerivacion}
                                 onChange={handleTipoDerivacionChange}
+                                disabled={!!idAlumno} 
                                 required
                             >
                                 <option value={1}>Autónomo</option>
@@ -169,6 +165,8 @@ const FormAddConsultasPs = () => {
                                     onChange={setAlumno}
                                     className="input-form"
                                     placeholder="Seleccionar alumno"
+                                    isDisabled={!!idAlumno} 
+               
                                     required
                                 />
                             </div>

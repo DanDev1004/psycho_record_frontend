@@ -7,7 +7,7 @@ import {
   mailOutline,
   peopleOutline,
   schoolOutline,
-  lockClosedOutline,
+  logOut
 } from "ionicons/icons";
 
 import logo from "../assets/images/logo.png";
@@ -128,7 +128,7 @@ const Sidebar = ({ isActive }) => {
           >
             <NavLink>
               <span className="icon">
-                <IonIcon icon={lockClosedOutline} />
+                <IonIcon icon={logOut} />
               </span>
               <span className="title">cerrar sesión</span>
             </NavLink>

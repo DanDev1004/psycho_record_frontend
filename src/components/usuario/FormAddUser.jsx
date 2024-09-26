@@ -67,7 +67,7 @@ const FormAddUser = () => {
 
       <div className="contenedor">
         <form onSubmit={saveUser}>
-        <p style={{color:'red'}}>Error: {msg}</p>
+        <p style={{color:'red'}}>{msg}</p>
 
           <div className="row">
             <div className="col-25">

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, NavLink } from "react-router-dom";
+import { useParams, NavLink, Link } from "react-router-dom";
 import "../../assets/styles/Form.css";
 
 const DetailsConsultaPs = () => {
     const { id } = useParams();
     const [consulta, setConsulta] = useState(null);
+    const [diagnosticos, setDiagnosticos] = useState([]);
 
     useEffect(() => {
         const obtenerConsulta = async () => {
@@ -17,7 +18,17 @@ const DetailsConsultaPs = () => {
             }
         };
 
+        const obtenerDiagnosticos = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/diagnostico/consulta/${id}`);
+                setDiagnosticos(response.data);
+            } catch (error) {
+                console.error("Error al obtener los diagnósticos", error);
+            }
+        };
+
         obtenerConsulta();
+        obtenerDiagnosticos();
     }, [id]);
 
     const formatearFecha = (dateString) => {
@@ -28,50 +39,55 @@ const DetailsConsultaPs = () => {
         return `${day}-${month}-${year}`;
     };
 
+    const eliminarDiagnostico = async (diagnosticoId) => {
+        const confirmacion = window.confirm("¿Estás seguro de eliminar este diagnóstico?");
+        if (confirmacion) {
+            try {
+                await axios.delete(`http://localhost:5000/diagnostico/${diagnosticoId}`);
+                setDiagnosticos(diagnosticos.filter(d => d.ID_DIAGNOSTICO !== diagnosticoId));
+                window.location.reload();
+            } catch (error) {
+                console.error("Error al eliminar el diagnóstico", error);
+            }
+        }
+    };
+
     if (!consulta) {
         return <div>Cargando...</div>;
     }
 
     return (
-        <div className="detailsConsultasps">
-            <NavLink to={"/consultasps"}>
-                <button className="btn-regresar">Regresar</button>
-            </NavLink>
-            <h1 className="title-form">Detalles de la Consulta Psicológica</h1>
-            <div className="contenedor">
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Usuario:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.USUARIO?.NOMBRE_USUARIO} {consulta.USUARIO?.APELLIDO_USUARIO}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Tipo de Derivación:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.TIPO_DERIVACION === 1
-                            ? "Autónomo"
-                            : consulta.TIPO_DERIVACION === 2
-                                ? "Pariente"
-                                : "Docente"
-                        }
-                    </div>
-                </div>
-                {consulta.TIPO_DERIVACION === 1 && consulta.ALUMNO && (
+        <>
+            <div className="detailsConsultasps">
+                <NavLink to={"/consultasps"}>
+                    <button className="btn-regresar">Regresar</button>
+                </NavLink>
+                <h1 className="title-form">Detalles de la Consulta Psicológica</h1>
+                <div className="contenedor">
+
                     <div className="row">
                         <div className="col-25">
-                            <strong>Alumno:</strong>
+                            <strong>Usuario:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
+                            {consulta.USUARIO?.NOMBRE_USUARIO} {consulta.USUARIO?.APELLIDO_USUARIO}
                         </div>
                     </div>
-                )}
-                {consulta.TIPO_DERIVACION === 2 && consulta.FAMILIAR && (
-                    <>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Derivación:</strong>
+                        </div>
+                        <div className="col-75">
+                            {consulta.TIPO_DERIVACION === 1
+                                ? "Autónomo"
+                                : consulta.TIPO_DERIVACION === 2
+                                    ? "Pariente"
+                                    : "Docente"}
+                        </div>
+                    </div>
+
+                    
                         <div className="row">
                             <div className="col-25">
                                 <strong>Alumno:</strong>
@@ -80,142 +96,174 @@ const DetailsConsultaPs = () => {
                                 {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
                             </div>
                         </div>
+                    
 
+                    {consulta.TIPO_DERIVACION === 2 && consulta.FAMILIAR && (
                         <div className="row">
                             <div className="col-25">
-                                <strong>Familiar:</strong>
+                                <strong>Derivado por:</strong>
                             </div>
                             <div className="col-75">
                                 {consulta.FAMILIAR}
                             </div>
                         </div>
-                    </>
-                )}
-                {consulta.TIPO_DERIVACION === 3 && consulta?.DERIVACION.USUARIO && (
-                    <>
-                        <div className="row">
-                            <div className="col-25">
-                                <strong>Alumno:</strong>
-                            </div>
-                            <div className="col-75">
-                                {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
-                            </div>
-                        </div>
+                    )}
 
+                    {consulta.TIPO_DERIVACION === 3 && consulta.DERIVACION && consulta.DERIVACION.USUARIO && (
                         <div className="row">
                             <div className="col-25">
-                                <strong>Tutor:</strong>
+                                <strong>Derivado por:</strong>
                             </div>
                             <div className="col-75">
                                 {consulta.DERIVACION.USUARIO.NOMBRE_USUARIO} {consulta.DERIVACION.USUARIO.APELLIDO_USUARIO}
                             </div>
                         </div>
-                    </>
-                )}
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Fecha de Atención:</strong>
-                    </div>
-                    <div className="col-75">
-                        {formatearFecha(consulta.FECHA_ATENCION)}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Hora de Inicio:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.HORA_INICIO}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Hora de Fin:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.HORA_FIN}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Asistencia:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.ASISTENCIA === 1
-                            ? "Pendiente"
-                            : consulta.ASISTENCIA === 2
-                                ? "Asistido"
-                                : "No asistido"}
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-25">
-                        <strong>Motivo:</strong>
-                    </div>
-                    <div className="col-75">
-                        {consulta.MOTIVO}
-                    </div>
-                </div>
+                    )}
 
-
-
-
-                {consulta.PROBLEMA && (
                     <div className="row">
                         <div className="col-25">
-                            <strong>Problema:</strong>
+                            <strong>Fecha de Atención:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.PROBLEMA}
+                            {formatearFecha(consulta.FECHA_ATENCION)}
                         </div>
                     </div>
-                )}
 
-                {consulta.RECOMENDACION && (
                     <div className="row">
                         <div className="col-25">
-                            <strong>Recomendación:</strong>
+                            <strong>Hora de Inicio:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.RECOMENDACION}
+                            {consulta.HORA_INICIO}
                         </div>
                     </div>
-                )}
 
-                {consulta.ASPECTO_FISICO && (
                     <div className="row">
                         <div className="col-25">
-                            <strong>Aspecto Físico:</strong>
+                            <strong>Hora de Fin:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.ASPECTO_FISICO}
+                            {consulta.HORA_FIN}
                         </div>
                     </div>
-                )}
 
-                {consulta.ASEO_PERSONAL && (
                     <div className="row">
                         <div className="col-25">
-                            <strong>Aseo Personal:</strong>
+                            <strong>Asistencia:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.ASEO_PERSONAL}
+                            {consulta.ASISTENCIA === 1
+                                ? "Pendiente"
+                                : consulta.ASISTENCIA === 2
+                                    ? "Asistido"
+                                    : "No asistido"}
                         </div>
                     </div>
-                )}
 
-                {consulta.CONDUCTA && (
                     <div className="row">
                         <div className="col-25">
-                            <strong>Conducta:</strong>
+                            <strong>Motivo:</strong>
                         </div>
                         <div className="col-75">
-                            {consulta.CONDUCTA}
+                            {consulta.MOTIVO}
                         </div>
                     </div>
-                )}
+
+                    {consulta.PROBLEMA && (
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Problema:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.PROBLEMA}
+                            </div>
+                        </div>
+                    )}
+
+                    {consulta.RECOMENDACION && (
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Recomendación:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.RECOMENDACION}
+                            </div>
+                        </div>
+                    )}
+
+                    {consulta.ASPECTO_FISICO && (
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Aspecto Físico:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.ASPECTO_FISICO}
+                            </div>
+                        </div>
+                    )}
+
+                    {consulta.ASEO_PERSONAL && (
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Aseo Personal:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.ASEO_PERSONAL}
+                            </div>
+                        </div>
+                    )}
+
+                    {consulta.CONDUCTA && (
+                        <div className="row">
+                            <div className="col-25">
+                                <strong>Conducta:</strong>
+                            </div>
+                            <div className="col-75">
+                                {consulta.CONDUCTA}
+                            </div>
+                        </div>
+                    )}
+
+                </div>
             </div>
-        </div>
+
+            {consulta.ASISTENCIA === 2 && (  // Mostrar la tabla de diagnósticos solo si la asistencia es 2
+                <div className="recentTable">
+                    <div className="TableHeader">
+                        <h2>Diagnósticos Relacionados</h2>
+                        <Link to={`/diagnostico/add/${id}`} className="btn">
+                            Agregar Diagnóstico
+                        </Link>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N°</th>
+                                <th>Condición</th>
+                                <th>Descripción</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {diagnosticos.map((diagnostico, index) => (
+                                <tr key={diagnostico.ID_DIAGNOSTICO}>
+                                    <td>{index + 1}</td>
+                                    <td>{diagnostico.CONDICION?.NOMBRE_CONDICION || 'No especificada'}</td>
+                                    <td>{diagnostico.DESCRIPCION || 'Sin descripción'}</td>
+                                    <td>
+                                  
+                                        <Link className="btn-delete" onClick={() => eliminarDiagnostico(diagnostico.ID_DIAGNOSTICO)}>
+                                            Eliminar
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </>
     );
 };
 

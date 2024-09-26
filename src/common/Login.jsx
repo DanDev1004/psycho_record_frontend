@@ -48,7 +48,7 @@ const Login = () => {
         <div className="login-content">
           <form onSubmit={Auth} className="form-login">
             <img src={logo} />
-            {isError && <p>{message}</p>}
+            {isError && <p style={{color:'red'}}>{message}</p>}
             <h2 className="title-welcome">Bienvenido</h2>
 
             <div className="input-div one">

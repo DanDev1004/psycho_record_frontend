@@ -21,6 +21,9 @@ import AddConsultasps from "./pages/consultaps/AddConsultasps";
 import EditConsultasps from "./pages/consultaps/EditConsultasps";
 import PageDetailsConsultaPs from "./pages/consultaps/DetailsConsultasps";
 
+import AddDiagnostico from "./pages/consultaps/AddDiagnostico";
+
+
 function App() {
   return (  
     <div>
@@ -49,6 +52,8 @@ function App() {
           <Route path="/Consultasps/add" element={<AddConsultasps/>}/>
           <Route path="/Consultasps/edit/:id" element={<EditConsultasps/>}/>
           <Route path="/Consultasps/detail/:id" element={<PageDetailsConsultaPs/>}/>
+
+          <Route path="/diagnostico/add/:id" element={<AddDiagnostico/>}/>
           
         </Routes>
       </BrowserRouter>
