@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, NavLink } from "react-router-dom";
+import {
+    trashOutline,
+    createOutline
+} from "ionicons/icons";
 import "../../assets/styles/Form.css";
 
 const DetailsDerivacion = () => {

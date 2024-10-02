@@ -3,8 +3,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { IonIcon } from "@ionic/react";
 import {
   homeOutline,
-  calendarClearOutline,
-  mailOutline,
+  heartCircleOutline,
+  radioOutline,
   peopleOutline,
   schoolOutline,
   logOut
@@ -13,6 +13,7 @@ import {
 import logo from "../assets/images/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { LogOut, reset } from "../features/authSlice";
+import {setTitle} from '../features/titleSlice';
 
 const Sidebar = ({ isActive }) => {
   const dispatch = useDispatch();
@@ -52,15 +53,15 @@ const Sidebar = ({ isActive }) => {
             {/*LOGO*/}
             <NavLink>
               <span className="icon">
-                <img src={logo} style={{ height: "40px", marginTop: "10px" }} alt="tecnologo" />
+                <img src={logo} style={{ height: "50px", marginTop: "10px" }} alt="tecnologo" />
               </span>
-              <span className="title mt-1">I.E.S.T.P. "CHINCHA"</span>
+              <span className="title">I.E.S.T.P. "CHINCHA"</span>
             </NavLink>
           </li>
 
           {/*DASHBOARD*/}
           <li ref={(el) => setRef("dashboard", el)} onMouseOver={() => handleMouseOver("dashboard")}>
-            <NavLink to={"/dashboard"}>
+            <NavLink to={"/dashboard"} onClick={()=>dispatch(setTitle('Historial Psicólogico'))}>
               <span className="icon">
                 <IonIcon icon={homeOutline} />
               </span>
@@ -71,7 +72,7 @@ const Sidebar = ({ isActive }) => {
           {/*USUARIOS*/}
           {user && user.ID_ROL === 1 && (
             <li ref={(el) => setRef("usuarios", el)} onMouseOver={() => handleMouseOver("usuarios")}>
-              <NavLink to={"/usuarios"}>
+              <NavLink to={"/usuarios"} onClick={()=>dispatch(setTitle('Gestión de Usuarios'))}>
                 <span className="icon">
                   <IonIcon icon={peopleOutline} />
                 </span>
@@ -84,7 +85,7 @@ const Sidebar = ({ isActive }) => {
           {/*ALUMNOS*/}
           {user && (user.ID_ROL === 1 || user.ID_ROL === 2 || user.ID_ROL === 3) && (
             <li ref={(el) => setRef("alumnos", el)} onMouseOver={() => handleMouseOver("alumnos")}>
-              <NavLink to={"/alumnos"}>
+              <NavLink to={"/alumnos"} onClick={()=>dispatch(setTitle('Gestión de Alumnos'))}>
                 <span className="icon">
                   <IonIcon icon={schoolOutline} />
                 </span>
@@ -97,9 +98,9 @@ const Sidebar = ({ isActive }) => {
           {/*DERIVACIONES*/}
           {user && (user.ID_ROL === 1 || user.ID_ROL === 3)  && (
               <li ref={(el) => setRef("derivaciones", el)} onMouseOver={() => handleMouseOver("derivaciones")}>
-              <NavLink to={"/derivaciones"}>
+              <NavLink to={"/derivaciones"} onClick={()=>dispatch(setTitle('Gestión de derivaciones'))}>
                 <span className="icon">
-                  <IonIcon icon={mailOutline} />
+                  <IonIcon icon={radioOutline} />
                 </span>
                 <span className="title">Derivaciones</span>
               </NavLink>
@@ -111,9 +112,9 @@ const Sidebar = ({ isActive }) => {
           {/*CONSULTAS */}
           {user && (user.ID_ROL === 1 || user.ID_ROL === 2 )  && (
             <li ref={(el) => setRef("consultasps", el)} onMouseOver={() => handleMouseOver("consultasps")}>
-              <NavLink to={"/consultasps"}>
+              <NavLink to={"/consultasps"} onClick={()=>dispatch(setTitle('Gestión de consultas'))}>
                 <span className="icon">
-                  <IonIcon icon={calendarClearOutline} />
+                  <IonIcon icon={heartCircleOutline} />
                 </span>
                 <span className="title">Consultas</span>
               </NavLink>

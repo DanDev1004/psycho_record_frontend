@@ -10,6 +10,8 @@ import EditUser from "./pages/usuario/EditUser";
 import Alumnos from "./pages/alumno/Alumno";
 import AddAlumno from "./pages/alumno/AddAlumno";
 import EditAlumno from "./pages/alumno/EditAlumno";
+import PageDetailsAlumno from "./pages/alumno/DetailsAlumno";
+
 
 import Derivaciones from "./pages/derivacion/derivacion";
 import AddDerivacion from "./pages/derivacion/AddDerivacion";
@@ -41,6 +43,7 @@ function App() {
           <Route path="/alumno/edit/:id" element={<EditAlumno/>}/>
           <Route path="/alumno/generar-cita/:idAlumno" element={<AddConsultasps />}/>
           <Route path="/alumno/derivar/:idAlumno" element={<AddDerivacion />}/>
+          <Route path="/alumno/detail/:id" element={<PageDetailsAlumno/>}/>
 
           
           <Route path="/derivaciones" element={<Derivaciones/>}/>

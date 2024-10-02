@@ -21,6 +21,7 @@ const FormAddConsultasPs = () => {
     const [horaFin, setHoraFin] = useState("");
 
     const [asistencia, setAsistencia] = useState(1);
+
     const [motivo, setMotivo] = useState("");
     const [problema, setProblema] = useState("");
     const [recomendacion, setRecomendacion] = useState("");
@@ -82,7 +83,7 @@ const FormAddConsultasPs = () => {
         }
     }, [tipoDerivacion, derivacion, derivaciones, alumnos]);
 
-    const handleTipoDerivacionChange = (e) => {
+    const tipoDerivacionCambio = (e) => {
         setTipoDerivacion(parseInt(e.target.value));
         setAlumno(null);
         setAlumnoDerivFam(null);
@@ -90,9 +91,7 @@ const FormAddConsultasPs = () => {
         setDerivacion("");
     };
 
-    const handleAsistenciaChange = (e) => {
-        setAsistencia(parseInt(e.target.value));
-    };
+
 
     const guardarConsulta = async (e) => {
         e.preventDefault();
@@ -142,7 +141,7 @@ const FormAddConsultasPs = () => {
                             <select
                                 className="input-form"
                                 value={tipoDerivacion}
-                                onChange={handleTipoDerivacionChange}
+                                onChange={tipoDerivacionCambio}
                                 disabled={!!idAlumno} 
                                 required
                             >
@@ -304,18 +303,40 @@ const FormAddConsultasPs = () => {
                         <div className="col-25">
                             <label className="label-form">Asistencia</label>
                         </div>
-                        <div className="col-75">
-                            <select
-                                className="input-form"
-                                value={asistencia}
-                                onChange={handleAsistenciaChange}
-                                required
-                            >
-                                <option value={1}>Pendiente</option>
-                                <option value={2}>Asistido</option>
-                            </select>
+
+                        <div className="col-75 caja-radio-button">
+                            <div className="opciones-radio">
+                                <div className="form-group">
+                                    <span className="opcion-radio">
+                                        <input
+                                            type="radio"
+                                            id="urgencia_baja"
+                                            name="asistencia"
+                                            value="1"
+                                            checked={asistencia === 1}
+                                            onChange={(e) => setAsistencia(Number(e.target.value))}
+                                            className="radio_baja"
+                                        />
+                                        <label htmlFor="urgencia_baja">Pendiente</label>
+                                    </span>
+                                    
+                                    <span className="opcion-radio">
+                                        <input
+                                            type="radio"
+                                            id="urgencia_media"
+                                            name="asistencia"
+                                            value="2"
+                                            checked={asistencia === 2}
+                                            onChange={(e) => setAsistencia(Number(e.target.value))}
+                                            className="radio_media"
+                                        />
+                                        <label htmlFor="urgencia_media">Asistido</label>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
 
                     {asistencia === 2 && (
                         <>

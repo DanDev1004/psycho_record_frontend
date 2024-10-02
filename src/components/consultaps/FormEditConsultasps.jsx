@@ -28,7 +28,7 @@ const FormEditConsultasPs = () => {
                 const consultaData = consultaResponse.data;
 
                 setConsulta(consultaData);
-                setFechaAtencion(formatearFecha(consultaData.FECHA_ATENCION));
+                setFechaAtencion(new Date(consultaData.FECHA_ATENCION).toISOString().split("T")[0]);
                 setHoraInicio(consultaData.HORA_INICIO);
                 setHoraFin(consultaData.HORA_FIN);
                 setAsistencia(consultaData.ASISTENCIA);
@@ -41,7 +41,7 @@ const FormEditConsultasPs = () => {
 
                 if (consultaData.TIPO_DERIVACION === 1 || consultaData.TIPO_DERIVACION === 2) {
                     setAlumno(`${consultaData.ALUMNO.NOMBRES} ${consultaData.ALUMNO.APELLIDOS}`);
-                    setTutor(`${consultaData.USUARIO.NOMBRE_USUARIO} ${consultaData.DERIVACION.USUARIO.APELLIDO_USUARIO}`);
+                
                 }
 
                 if (consultaData.TIPO_DERIVACION === 3) {
@@ -56,13 +56,6 @@ const FormEditConsultasPs = () => {
         cargarDatos();
     }, [id]);
 
-    const formatearFecha = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate() + 1).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    };
 
     const actualizarConsulta = async (e) => {
         e.preventDefault();

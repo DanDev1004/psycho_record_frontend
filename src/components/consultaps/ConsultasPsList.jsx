@@ -6,6 +6,11 @@ import { searchOutline } from "ionicons/icons";
 import { useTable, usePagination } from 'react-table';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import {
+    trashOutline,
+    createOutline,
+    newspaperOutline
+} from "ionicons/icons";
 
 const ConsultasPsList = () => {
     const [consultas, setConsultas] = useState([]);
@@ -19,7 +24,7 @@ const ConsultasPsList = () => {
     const obtenerConsultas = async () => {
         try {
             const response = await axios.get("http://localhost:5000/consulta");
-            setConsultas(response.data);
+            setConsultas(response.data.reverse());
         } catch (error) {
             console.error("Error al obtener las consultas", error);
         }
@@ -38,15 +43,17 @@ const ConsultasPsList = () => {
 
 
     const eliminarConsulta = async (id) => {
-        try {
-            await axios.delete(`http://localhost:5000/consulta/${id}`);
-            obtenerConsultas();
-        } catch (error) {
-            console.error("Error al eliminar la consulta", error);
+        const confirmacion = window.confirm("¿Estás seguro de eliminar esta consulta?");
+        if(confirmacion){
+            try {
+                await axios.delete(`http://localhost:5000/consulta/${id}`);
+                obtenerConsultas();
+            } catch (error) {
+                console.error("Error al eliminar la consulta", error);
+            }
         }
     };
 
-    /*HELPERS */
     const formatearFecha = (fecha) => {
         const fechaObjeto = new Date(fecha);
         const dia = String(fechaObjeto.getUTCDate()).padStart(2, '0');
@@ -159,7 +166,7 @@ const ConsultasPsList = () => {
         () => [
             {
                 Header: 'N°',
-                Cell: ({ row }) => row.index + 1,
+                Cell: ({ row }) => consultas.length - row.index,
             },
             {
                 Header: 'Usuario',
@@ -180,18 +187,6 @@ const ConsultasPsList = () => {
                 accessor: 'ALUMNO',
                 Cell: ({ value }) =>
                     value ? `${value.NOMBRES} ${value.APELLIDOS} (DNI: ${value.DNI})` : "------------",
-            },
-            {
-                Header: 'Tutor',
-                accessor: 'DERIVACION.USUARIO',
-                Cell: ({ value }) =>
-                    value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "------------",
-            },
-            {
-                Header: 'Familiar',
-                accessor: 'FAMILIAR',
-                Cell: ({ value }) =>
-                    value ? value : "------------",
             },
             {
                 Header: 'Fecha Atención',
@@ -215,20 +210,20 @@ const ConsultasPsList = () => {
                 Header: 'Acciones',
                 Cell: ({ row }) => (
                     <>
-                        <Link className="btn-details" to={`/Consultasps/detail/${row.original.ID_CONSULTA_PS}`}>
-                            Detalles
+                        <Link className="btn-details" to={`/Consultasps/detail/${row.original.ID_CONSULTA_PS}`} title="Detalles">
+                        <IonIcon icon={newspaperOutline} />
                         </Link>
-                        <Link className="btn-edit" to={`/Consultasps/edit/${row.original.ID_CONSULTA_PS}`}>
-                            Editar
+                        <Link className="btn-edit" to={`/Consultasps/edit/${row.original.ID_CONSULTA_PS}`} title="Editar">
+                        <IonIcon icon={createOutline} />
                         </Link>
-                        <Link className="btn-delete" onClick={() => eliminarConsulta(row.original.ID_CONSULTA_PS)}>
-                            Eliminar
+                        <Link className="btn-delete" onClick={() => eliminarConsulta(row.original.ID_CONSULTA_PS)} title="Eliminar">
+                        <IonIcon icon={trashOutline} />
                         </Link>
                     </>
                 ),
             },
         ],
-        []
+        [consultas]
     );
 
     const data = useMemo(() => consultas, [consultas]);

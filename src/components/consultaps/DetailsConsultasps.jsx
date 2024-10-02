@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, NavLink, Link } from "react-router-dom";
 import "../../assets/styles/Form.css";
+import { IonIcon } from '@ionic/react';
+import {
+    trashOutline
+} from "ionicons/icons";
 
 const DetailsConsultaPs = () => {
     const { id } = useParams();
@@ -87,16 +91,16 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
-                    
-                        <div className="row">
-                            <div className="col-25">
-                                <strong>Alumno:</strong>
-                            </div>
-                            <div className="col-75">
-                                {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
-                            </div>
+
+                    <div className="row">
+                        <div className="col-25">
+                            <strong>Alumno:</strong>
                         </div>
-                    
+                        <div className="col-75">
+                            {consulta.ALUMNO.NOMBRES} {consulta.ALUMNO.APELLIDOS} (DNI: {consulta.ALUMNO.DNI})
+                        </div>
+                    </div>
+
 
                     {consulta.TIPO_DERIVACION === 2 && consulta.FAMILIAR && (
                         <div className="row">
@@ -160,7 +164,7 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
-                    <div className="row">
+                    <div className="row" >
                         <div className="col-25">
                             <strong>Motivo:</strong>
                         </div>
@@ -170,7 +174,7 @@ const DetailsConsultaPs = () => {
                     </div>
 
                     {consulta.PROBLEMA && (
-                        <div className="row">
+                        <div className="row" style={{ borderTop: '1px solid #c8c8c8', borderBottom: '1px solid #c8c8c8' }}>
                             <div className="col-25">
                                 <strong>Problema:</strong>
                             </div>
@@ -181,7 +185,7 @@ const DetailsConsultaPs = () => {
                     )}
 
                     {consulta.RECOMENDACION && (
-                        <div className="row">
+                        <div className="row" style={{ borderBottom: '1px solid #c8c8c8' }}>
                             <div className="col-25">
                                 <strong>Recomendación:</strong>
                             </div>
@@ -192,7 +196,7 @@ const DetailsConsultaPs = () => {
                     )}
 
                     {consulta.ASPECTO_FISICO && (
-                        <div className="row">
+                        <div className="row" style={{ borderBottom: '1px solid #c8c8c8' }}>
                             <div className="col-25">
                                 <strong>Aspecto Físico:</strong>
                             </div>
@@ -203,7 +207,7 @@ const DetailsConsultaPs = () => {
                     )}
 
                     {consulta.ASEO_PERSONAL && (
-                        <div className="row">
+                        <div className="row" style={{ borderBottom: '1px solid #c8c8c8' }}>
                             <div className="col-25">
                                 <strong>Aseo Personal:</strong>
                             </div>
@@ -214,7 +218,7 @@ const DetailsConsultaPs = () => {
                     )}
 
                     {consulta.CONDUCTA && (
-                        <div className="row">
+                        <div className="row" >
                             <div className="col-25">
                                 <strong>Conducta:</strong>
                             </div>
@@ -227,12 +231,12 @@ const DetailsConsultaPs = () => {
                 </div>
             </div>
 
-            {consulta.ASISTENCIA === 2 && (  // Mostrar la tabla de diagnósticos solo si la asistencia es 2
+            {consulta.ASISTENCIA === 2 && (
                 <div className="recentTable">
                     <div className="TableHeader">
                         <h2>Diagnósticos Relacionados</h2>
                         <Link to={`/diagnostico/add/${id}`} className="btn">
-                            Agregar Diagnóstico
+                            Diagnosticar
                         </Link>
                     </div>
 
@@ -252,9 +256,9 @@ const DetailsConsultaPs = () => {
                                     <td>{diagnostico.CONDICION?.NOMBRE_CONDICION || 'No especificada'}</td>
                                     <td>{diagnostico.DESCRIPCION || 'Sin descripción'}</td>
                                     <td>
-                                  
+
                                         <Link className="btn-delete" onClick={() => eliminarDiagnostico(diagnostico.ID_DIAGNOSTICO)}>
-                                            Eliminar
+                                            <IonIcon icon={trashOutline} />
                                         </Link>
                                     </td>
                                 </tr>

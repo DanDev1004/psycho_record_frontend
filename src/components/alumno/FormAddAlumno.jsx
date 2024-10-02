@@ -24,6 +24,9 @@ const FormAddAlumno = () => {
     const [areaPeOptions, setAreaPeOptions] = useState([]); 
     const [cicloOptions, setCicloOptions] = useState([]);
 
+    const [areasPe, setAreasPe] = useState([]);
+
+
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
 
@@ -133,7 +136,13 @@ const FormAddAlumno = () => {
                                 className="input-form"
                                 type="text"
                                 value={dni}
-                                onChange={(e) => setDni(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    //regex
+                                    if (/^\d{0,8}$/.test(value)) {
+                                        setDni(e.target.value);
+                                    }
+                                }}
                                 placeholder="DNI"
                             />
                         </div>
@@ -149,6 +158,7 @@ const FormAddAlumno = () => {
                                 type="text"
                                 value={nombres}
                                 onChange={(e) => setNombres(e.target.value)}
+                                style={{ textTransform: 'capitalize' }}
                                 placeholder="Nombres"
                             />
                         </div>
@@ -164,6 +174,7 @@ const FormAddAlumno = () => {
                                 type="text"
                                 value={apellidos}
                                 onChange={(e) => setApellidos(e.target.value)}
+                                style={{ textTransform: 'capitalize' }}
                                 placeholder="Apellidos"
                             />
                         </div>
@@ -173,13 +184,14 @@ const FormAddAlumno = () => {
                         <div className="col-25">
                             <label className="label-form">Prog. Estudio</label>
                         </div>
-                        <div className="col-75">
+                        <div className="col-75" >
                             <Select
                                 options={areaPeOptions}
                                 value={areaPe}
                                 onChange={setAreaPe}
                                 className="input-form"
                                 placeholder="Selecciona un programa de estudio"
+                                
                             />
                         </div>
                     </div>
@@ -239,10 +251,16 @@ const FormAddAlumno = () => {
                         <div className="col-75">
                             <input
                                 className="input-form"
-                                type="text"
+                                type="tel"
                                 value={telefono}
-                                onChange={(e) => setTelefono(e.target.value)}
-                                placeholder="Teléfono"
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    //regex
+                                    if (/^\d{0,9}$/.test(value)) {
+                                        setTelefono(value);
+                                    }
+                                }}
+                                placeholder="987654321"
                             />
                         </div>
                     </div>
@@ -333,5 +351,5 @@ const FormAddAlumno = () => {
         </div>
     );
 };
-
+ 
 export default FormAddAlumno;

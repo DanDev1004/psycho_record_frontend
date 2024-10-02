@@ -1,11 +1,12 @@
 import React from "react";
 import { IonIcon } from "@ionic/react";
-import { menuOutline, personCircle, text } from "ionicons/icons";
+import { menuOutline, personCircle } from "ionicons/icons";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const Topbar = ({ onToggle }) => {
   const { user } = useSelector((state) => state.auth);
+  const { currentTitle } = useSelector((state)=>state.title);
 
   if (!user) {
     return null; 
@@ -17,7 +18,7 @@ const Topbar = ({ onToggle }) => {
         <IonIcon icon={menuOutline} />
       </div>
 
-      <div className="titulo-label">Historial Psicólogico</div>
+      <div className="titulo-label">{currentTitle}</div>
 
       <Link to={`/usuario/edit/${user.ID_USUARIO}`} className="user-label">
         <div className="user-info">

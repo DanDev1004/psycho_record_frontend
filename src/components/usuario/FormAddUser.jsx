@@ -29,6 +29,30 @@ const FormAddUser = () => {
     cargarRoles();
   }, []);
 
+  const generarUsername = (nombre, rolSeleccionado) => {
+    if (!nombre || !rolSeleccionado) return;
+    
+    const primerNombre = nombre.split(" ")[0].toLowerCase();
+    
+    const rolNombre = roles.find((r) => r.ID_ROL === parseInt(rolSeleccionado))?.NOMBRE_ROL.toLowerCase();
+    
+    if (primerNombre && rolNombre) {
+      setUsername(`${primerNombre}_${rolNombre}`);
+    }
+  };
+
+  const handleNombresChange = (e) => {
+    const nuevoNombre = e.target.value;
+    setNombres(nuevoNombre);
+    generarUsername(nuevoNombre, rol);
+  };
+
+  const handleRolChange = (e) => {
+    const nuevoRol = e.target.value;
+    setRole(nuevoRol);
+    generarUsername(nombres, nuevoRol); 
+  };
+
   const saveUser = async (e) => {
     e.preventDefault();
 
@@ -42,7 +66,7 @@ const FormAddUser = () => {
         DNI_USUARIO: dni,
         NOMBRE_USUARIO: nombres,
         APELLIDO_USUARIO: apellidos,
-        USERNAME: username,
+        USERNAME: username, 
         EMAIL: email,
         TELEFONO: telefono,
         PASSWORD_USER: password,
@@ -67,7 +91,7 @@ const FormAddUser = () => {
 
       <div className="contenedor">
         <form onSubmit={saveUser}>
-        <p style={{color:'red'}}>{msg}</p>
+          <p style={{ color: 'red' }}>{msg}</p>
 
           <div className="row">
             <div className="col-25">
@@ -93,7 +117,8 @@ const FormAddUser = () => {
                 className="input-form"
                 type="text"
                 value={nombres}
-                onChange={(e) => setNombres(e.target.value)}
+                onChange={handleNombresChange}
+                style={{ textTransform: 'capitalize' }}
                 placeholder="Nombres"
               />
             </div>
@@ -109,22 +134,8 @@ const FormAddUser = () => {
                 type="text"
                 value={apellidos}
                 onChange={(e) => setApellidos(e.target.value)}
+                style={{ textTransform: 'capitalize' }}
                 placeholder="Apellidos"
-              />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-25">
-              <label className="label-form">Username</label>
-            </div>
-            <div className="col-75">
-              <input
-                className="input-form"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
               />
             </div>
           </div>
@@ -197,7 +208,7 @@ const FormAddUser = () => {
               <select
                 className="input-form"
                 value={rol}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={handleRolChange}
               >
                 <option value="">Seleccionar un rol</option>
                 {roles.map((role) => (

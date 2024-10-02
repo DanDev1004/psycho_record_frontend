@@ -5,31 +5,34 @@ import Select from "react-select";
 import "../../assets/styles/Form.css";
 
 const FormEditAlumno = () => {
+    const { id } = useParams();
     const [dni, setDni] = useState("");
     const [nombres, setNombres] = useState("");
     const [apellidos, setApellidos] = useState("");
-    const [areaPe, setAreaPe] = useState(null); 
     const [sexo, setSexo] = useState("M");
     const [telefono, setTelefono] = useState("");
-    const [religion, setReligion] = useState(null);
-    const [estadoCivil, setEstadoCivil] = useState(null);
     const [direccionNacimiento, setDireccionNacimiento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState("");
     const [domicilio, setDomicilio] = useState("");
-    const [ciclo, setCiclo] = useState(null); 
     const [turno, setTurno] = useState("M");
 
-    const [religionOptions, setReligionOptions] = useState([]);
-    const [estadoCivilOptions, setEstadoCivilOptions] = useState([]);
+    const [areaPe, setAreaPe] = useState(null); 
     const [areaPeOptions, setAreaPeOptions] = useState([]);
+ 
+    const [religion, setReligion] = useState(null);
+    const [religionOptions, setReligionOptions] = useState([]);
+    
+    const [estadoCivil, setEstadoCivil] = useState(null);
+    const [estadoCivilOptions, setEstadoCivilOptions] = useState([]);
+
+    const [ciclo, setCiclo] = useState(null); 
     const [cicloOptions, setCicloOptions] = useState([]); 
 
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
-    const { id } = useParams();
-
+    
     useEffect(() => {
-        const getAlumnoById = async () => {
+        const obtenerPorId = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/alumno/${id}`);
                 setDni(response.data.DNI);
@@ -37,31 +40,31 @@ const FormEditAlumno = () => {
                 setApellidos(response.data.APELLIDOS);
                 setSexo(response.data.SEXO);
                 setTelefono(response.data.TELEFONO);
+                setDireccionNacimiento(response.data.DIR_NAC);
+                setTurno(response.data.TURNO);
+                setDomicilio(response.data.DOMICILIO);
+                setFechaNacimiento(new Date(response.data.FECH_NAC).toISOString().split("T")[0]);
+
                 setReligion({
                     value: response.data.ID_RELIGION,
                     label: response.data.RELIGION?.NOMBRE_RELIGION,
                 });
+
                 setEstadoCivil({
                     value: response.data.ID_EC,
                     label: response.data.ESTADO_CIVIL?.NOMBRE_EC,
                 });
+
                 setAreaPe({
                     value: response.data.ID_AREA_PE,
                     label: response.data.AREA_PE?.NOMBRE_AREA_PE,
                 });
-                setDireccionNacimiento(response.data.DIR_NAC);
+                
                 setCiclo({
                     value: response.data.CICLO,
                     label: convertirRomanos(response.data.CICLO),
                 });
-                setTurno(response.data.TURNO);
                 
-                const fechaNacimientoFormateada = response.data.FECH_NAC
-                    ? new Date(response.data.FECH_NAC).toISOString().split("T")[0]
-                    : "";
-
-                setFechaNacimiento(fechaNacimientoFormateada);
-                setDomicilio(response.data.DOMICILIO);
             } catch (error) {
                 if (error.response) {
                     setMsg(error.response.data.msg);
@@ -116,7 +119,7 @@ const FormEditAlumno = () => {
             setCicloOptions(ciclos);
         };
 
-        getAlumnoById();
+        obtenerPorId();
         cargarReligiones();
         cargarEstadosCiviles();
         cargarAreasPe();
@@ -192,6 +195,7 @@ const FormEditAlumno = () => {
                                 value={nombres || ""}
                                 onChange={(e) => setNombres(e.target.value)}
                                 placeholder="Nombres"
+                                style={{ textTransform: 'capitalize' }}
                             />
                         </div>
                     </div>
@@ -207,6 +211,7 @@ const FormEditAlumno = () => {
                                 value={apellidos || ""}
                                 onChange={(e) => setApellidos(e.target.value)}
                                 placeholder="Apellidos"
+                                style={{ textTransform: 'capitalize' }}
                             />
                         </div>
                     </div>

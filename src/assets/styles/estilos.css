@@ -351,10 +351,20 @@ body {
 }
   */
 
+  .btn-blue {
+    position: relative;
+    padding: 8px 10px;
+    background: #02828b;
+    text-decoration: none;
+    color: var(--white);
+    border-radius: 6px;
+    margin-right: 1px;
+  }
+
 
 .btn-details {
   position: relative;
-  padding: 5px 10px;
+  padding: 8px 10px;
   background: #028b4b;
   text-decoration: none;
   color: var(--white);
@@ -364,7 +374,7 @@ body {
 
 .btn-edit {
   position: relative;
-  padding: 5px 10px;
+  padding: 8px 10px;
   background: #e9b10a;
   text-decoration: none;
   color: var(--white);
@@ -374,7 +384,7 @@ body {
 
 .btn-delete {
   position: relative;
-  padding: 5px 10px;
+  padding: 8px 10px;
   background: red;
   text-decoration: none;
   color: var(--white);
@@ -397,32 +407,7 @@ body {
   margin-left: 10px;
 }
 
-.status.asistido {
-  padding: 2px 4px;
-  background: #8de02c;
-  color: var(--white);
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-}
 
-.status.pendiente {
-  padding: 2px 4px;
-  background: #e9b10a;
-  color: var(--white);
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.status.noAsistido {
-  padding: 2px 4px;
-  background: #f00;
-  color: var(--white);
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-}
 
 
 .recentStudents {

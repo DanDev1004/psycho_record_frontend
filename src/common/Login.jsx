@@ -15,7 +15,7 @@ import {
 } from 'ionicons/icons';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ const Login = () => {
 
   const Auth = (e) => {
     e.preventDefault();
-    dispatch(LoginUser({ email, password }));
+    dispatch(LoginUser({ username, password }));
   };
 
   return (
@@ -59,9 +59,9 @@ const Login = () => {
                 <input
                   type="text"
                   className="input"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
 
                 />
               </div>

@@ -5,6 +5,10 @@ import { IonIcon } from '@ionic/react';
 import { useSelector } from "react-redux";
 import { searchOutline } from 'ionicons/icons';
 import { useTable, usePagination } from 'react-table';
+import {
+  trashOutline,
+  createOutline
+} from "ionicons/icons";
 
 const UsuarioList = () => {
   const [usuarios, setUsers] = useState([]);
@@ -20,7 +24,7 @@ const UsuarioList = () => {
   const obtenerTodos = async () => {
     try {
       const response = await axios.get("http://localhost:5000/usuario");
-      const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
+      const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO).reverse();
       setUsers(filtrarUsuarios); 
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
@@ -46,12 +50,16 @@ const UsuarioList = () => {
     }
   };
 
-  const eliminar = async (userId) => {
-    try {
-      await axios.delete(`http://localhost:5000/usuario/${userId}`);
-      obtenerTodos();
-    } catch (error) {
-      console.error("Error al eliminar usuario:", error);
+  const eliminar = async (userId) => { 
+    const confirmacion = window.confirm("¿Estás seguro de eliminar este usuario?");
+
+    if(confirmacion){
+      try {
+        await axios.delete(`http://localhost:5000/usuario/${userId}`);
+        obtenerTodos();
+      } catch (error) {
+        console.error("Error al eliminar usuario:", error);
+      }
     }
   };
 
@@ -59,7 +67,7 @@ const UsuarioList = () => {
     () => [
       {
         Header: 'N°',
-        Cell: ({ row }) => row.index + 1,
+        Cell: ({ row }) => usuarios.length - row.index,
       },
       {
         Header: 'DNI',
@@ -67,7 +75,10 @@ const UsuarioList = () => {
       },
       {
         Header: 'NOMBRES Y APELLIDOS',
-        Cell: ({ row }) => `${row.original.NOMBRE_USUARIO} ${row.original.APELLIDO_USUARIO}`,
+        Cell: ({ row }) => 
+          <div style={{textTransform:'capitalize'}}>
+            {`${row.original.NOMBRE_USUARIO} ${row.original.APELLIDO_USUARIO}`}
+          </div>
       },
       {
         Header: 'EMAIL',
@@ -91,10 +102,10 @@ const UsuarioList = () => {
         Cell: ({ row }) => (
           <>
             <Link className="btn-edit" to={`/usuario/edit/${row.original.ID_USUARIO}`}>
-              Editar
+            <IonIcon icon={createOutline} />
             </Link>
             <Link className="btn-delete" onClick={() => eliminar(row.original.ID_USUARIO)}>
-              Eliminar
+            <IonIcon icon={trashOutline} />
             </Link>
           </>
         ),

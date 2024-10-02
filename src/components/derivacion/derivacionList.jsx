@@ -5,10 +5,17 @@ import { IonIcon } from "@ionic/react";
 import { searchOutline } from "ionicons/icons";
 import { useTable, usePagination } from 'react-table';
 import { useSelector } from 'react-redux';
+import {
+    trashOutline,
+    createOutline,
+    newspaperOutline
+} from "ionicons/icons";
+
+
 const DerivacionList = () => {
     const [derivaciones, setDerivaciones] = useState([]);
     const [searchText, setSearchText] = useState("");
-    const { user } = useSelector((state) => state.auth); 
+    const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         obtenerDerivaciones();
@@ -18,7 +25,7 @@ const DerivacionList = () => {
         try {
             const response = await axios.get("http://localhost:5000/derivacion");
 
-            setDerivaciones(response.data);
+            setDerivaciones(response.data.reverse());
         } catch (error) {
             console.error("Error al obtener las derivaciones", error);
         }
@@ -43,11 +50,14 @@ const DerivacionList = () => {
     };
 
     const eliminarDerivacion = async (id) => {
-        try {
-            await axios.delete(`http://localhost:5000/derivacion/${id}`);
-            obtenerDerivaciones();
-        } catch (error) {
-            console.error("Error al eliminar la derivación", error);
+        const confirmacion = window.confirm("¿Estás seguro de eliminar esta derivación?");
+        if (confirmacion) {
+            try {
+                await axios.delete(`http://localhost:5000/derivacion/${id}`);
+                obtenerDerivaciones();
+            } catch (error) {
+                console.error("Error al eliminar la derivación", error);
+            }
         }
     };
 
@@ -56,17 +66,13 @@ const DerivacionList = () => {
             const cols = [
                 {
                     Header: 'N°',
-                    Cell: ({ row }) => row.index + 1,
+                    Cell: ({ row }) => derivaciones.length - row.index,
                 },
                 {
                     Header: 'ALUMNO',
                     accessor: 'ALUMNO',
                     Cell: ({ value }) =>
                         value ? `${value.NOMBRES} ${value.APELLIDOS}` : "No asignado",
-                },
-                {
-                    Header: 'MOTIVO',
-                    accessor: 'MOTIVO',
                 },
                 {
                     Header: () => (
@@ -93,32 +99,34 @@ const DerivacionList = () => {
                     Header: 'ACCIONES',
                     Cell: ({ row }) => (
                         <>
-                            {row.original.RECIBIDO ? (
+                            {!row.original.RECIBIDO && (
                                 <Link
-                                    className="btn-details"
-                                    to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
+                                    className="btn-edit"
+                                    to={`/derivacion/edit/${row.original.ID_DERIVACION}`}
+                                    title="Editar"
                                 >
-                                    Detalles
+                                    <IonIcon icon={createOutline} />
                                 </Link>
-
-                            ) : (
-                                    <Link
-                                        className="btn-edit"
-                                        to={`/derivacion/edit/${row.original.ID_DERIVACION}`}
-                                    >
-                                        Editar
-                                    </Link>
-                                   
                             )}
-                             <Link
-                                        className="btn-delete"
-                                        onClick={() => eliminarDerivacion(row.original.ID_DERIVACION)}
-                                    >
-                                        Eliminar
-                                    </Link>
+
+                            <Link
+                                className="btn-details"
+                                to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
+                            >
+                                <IonIcon icon={newspaperOutline} />
+                            </Link>
+
+
+                            <Link
+                                className="btn-delete"
+                                onClick={() => eliminarDerivacion(row.original.ID_DERIVACION)}
+                                title="Eliminar"
+                            >
+                                <IonIcon icon={trashOutline} />
+                            </Link>
                         </>
                     ),
-                },
+                }
             ];
 
             if (user?.ID_ROL !== 3) {
@@ -132,7 +140,7 @@ const DerivacionList = () => {
 
             return cols;
         },
-        [derivaciones, user] 
+        [derivaciones, user]
     );
 
     const data = useMemo(() => derivaciones, [derivaciones]);

@@ -6,9 +6,12 @@ import { useSelector } from "react-redux";
 import "../../assets/styles/Form.css";
 
 const FormAddDerivacion = () => {
-    const { user } = useSelector((state) => state.auth); 
+    const { user } = useSelector((state) => state.auth);
     const [usuarios, setUsuarios] = useState([]);
     const [alumnos, setAlumnos] = useState([]);
+    const [areaPe, setAreaPe] = useState(null);
+    const [areasPe, setAreasPe] = useState([]);
+    const [ciclo, setCiclo] = useState(null);
     const [usuario, setUsuario] = useState(null);
     const [alumno, setAlumno] = useState(null);
     const [motivo, setMotivo] = useState("");
@@ -16,6 +19,11 @@ const FormAddDerivacion = () => {
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
     const { idAlumno } = useParams();
+
+    const convertirRomanos = (num) => {
+        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        return numerosRomanos[num - 1] || num;
+    };
 
     useEffect(() => {
         const cargarUsuariosDocentes = async () => {
@@ -38,11 +46,12 @@ const FormAddDerivacion = () => {
                 const response = await axios.get("http://localhost:5000/alumno");
                 const alumnoOptions = response.data.map((alumno) => ({
                     value: alumno.ID_ALUMNO,
-                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE?.NOMBRE_AREA_PE}`,
+                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE.NOMBRE_AREA_PE} - ${alumno.CICLO}`,
+                    idAreaPe: alumno.AREA_PE.ID_AREA_PE,
+                    ciclo: alumno.CICLO,
                 }));
                 setAlumnos(alumnoOptions);
 
-                
                 const alumnoSeleccionado = alumnoOptions.find(
                     (alumno) => alumno.value === parseInt(idAlumno)
                 );
@@ -54,33 +63,62 @@ const FormAddDerivacion = () => {
             }
         };
 
+        const cargarAreasPe = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/areape");
+                const areasOptions = response.data.map((area) => ({
+                    value: area.ID_AREA_PE,
+                    label: area.NOMBRE_AREA_PE,
+                }));
+                setAreasPe(areasOptions);
+            } catch (error) {
+                console.error("Error al cargar las áreas", error);
+            }
+        };
+
         cargarUsuariosDocentes();
         cargarAlumnos();
+        cargarAreasPe();
     }, [idAlumno]);
 
-    useEffect(() => {
-        if (user?.ID_ROL === 3) {
-            setUsuario({
-                value: user.ID_USUARIO,
-                label: `${user.NOMBRE_USUARIO} ${user.APELLIDO_USUARIO}`
-            });
+    const alumnosFiltrados = alumnos.filter((alumno) => {
+        if (!areaPe && !ciclo) {
+            return true;
         }
-    }, [user]);
+        if (areaPe && ciclo) {
+            return alumno.idAreaPe === areaPe.value && alumno.ciclo === ciclo.value;
+        }
+        if (areaPe) {
+            return alumno.idAreaPe === areaPe.value;
+        }
+        if (ciclo) {
+            return alumno.ciclo === ciclo.value;
+        }
+        return true;
+    });
+
+    const ciclosOptions = [
+        { value: 1, label: convertirRomanos(1) },
+        { value: 2, label: convertirRomanos(2) },
+        { value: 3, label: convertirRomanos(3) },
+        { value: 4, label: convertirRomanos(4) },
+        { value: 5, label: convertirRomanos(5) },
+        { value: 6, label: convertirRomanos(6) }
+    ];
 
     const guardarDerivacion = async (e) => {
         e.preventDefault();
+
         try {
             await axios.post("http://localhost:5000/derivacion", {
-                ID_USUARIO: usuario.value,
+                ID_USUARIO: (user?.ID_ROL === 3 ) ? user.ID_USUARIO : usuario.value,
                 ID_ALUMNO: alumno.value,
                 MOTIVO: motivo,
                 URGENCIA: Number(urgencia),
             });
             navigate("/derivaciones");
         } catch (error) {
-            if (error.response) {
-                setMsg(error.response.data.msg);
-            }
+            console.error("Error al guardar la derivación", error); 
         }
     };
 
@@ -105,8 +143,9 @@ const FormAddDerivacion = () => {
                                 <input
                                     type="text"
                                     value={`${user.NOMBRE_USUARIO} ${user.APELLIDO_USUARIO}`}
-                                    className="input-form"
-                                    readOnly
+                                    onChange={setUsuario}
+                                    className="input-form input-tutor"
+                                    readOnly 
                                 />
                             ) : (
                                 <Select
@@ -122,6 +161,45 @@ const FormAddDerivacion = () => {
                         </div>
                     </div>
 
+                    {!idAlumno ? (
+                        <div className="row">
+                            <div className="col-25">
+                                <label className="label-form">Área de Estudio</label>
+                            </div>
+                            <div className="col-75">
+                                <Select
+                                    value={areaPe}
+                                    onChange={setAreaPe}
+                                    options={areasPe}
+                                    placeholder="Seleccionar área de estudio"
+                                    className="input-form"
+                                    isClearable
+                                />
+                            </div>
+                        </div>
+                    ) : null}
+                    
+                    {!idAlumno ? (
+                        <div className="row">
+                            <div className="col-25">
+                                <label className="label-form">Ciclo</label>
+                            </div>
+                            <div className="col-75">
+
+                                <Select
+                                    value={ciclo}
+                                    onChange={setCiclo}
+                                    options={ciclosOptions}
+                                    placeholder="Seleccionar ciclo"
+                                    className="input-form"
+                                    isClearable
+
+                                />
+
+                            </div>
+                        </div>
+                    ) : null}
+
                     <div className="row">
                         <div className="col-25">
                             <label className="label-form">Alumno</label>
@@ -130,7 +208,7 @@ const FormAddDerivacion = () => {
                             <Select
                                 value={alumno}
                                 onChange={setAlumno}
-                                options={alumnos}
+                                options={alumnosFiltrados}
                                 placeholder="Selecciona un alumno"
                                 className="input-form"
                                 isClearable
@@ -158,17 +236,50 @@ const FormAddDerivacion = () => {
                         <div className="col-25">
                             <label className="label-form">Urgencia</label>
                         </div>
-                        <div className="col-75">
-                            <select
-                                className="input-form"
-                                value={urgencia}
-                                onChange={(e) => setUrgencia(e.target.value)}
-                                required
-                            >
-                                <option value="1">Baja</option>
-                                <option value="2">Media</option>
-                                <option value="3">Alta</option>
-                            </select>
+
+                        <div className="col-75 caja-radio-button">
+                            <div className="opciones-radio">
+                                <div className="form-group">
+                                    <span className="opcion-radio">
+                                        <input
+                                            type="radio"
+                                            id="urgencia_baja"
+                                            name="urgencia"
+                                            value="1"
+                                            checked={urgencia === 1}
+                                            onChange={(e) => setUrgencia(Number(e.target.value))}
+                                            className="radio_baja"
+                                        />
+                                        <label htmlFor="urgencia_baja">Baja</label>
+                                    </span>
+
+                                    <span className="opcion-radio">
+                                        <input
+                                            type="radio"
+                                            id="urgencia_media"
+                                            name="urgencia"
+                                            value="2"
+                                            checked={urgencia === 2}
+                                            onChange={(e) => setUrgencia(Number(e.target.value))}
+                                            className="radio_media"
+                                        />
+                                        <label htmlFor="urgencia_media">Media</label>
+                                    </span>
+
+                                    <span className="opcion-radio">
+                                        <input
+                                            type="radio"
+                                            id="urgencia_alta"
+                                            name="urgencia"
+                                            value="3"
+                                            checked={urgencia === 3}
+                                            onChange={(e) => setUrgencia(Number(e.target.value))}
+                                            className="radio_alta"
+                                        />
+                                        <label htmlFor="urgencia_alta">Alta</label>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

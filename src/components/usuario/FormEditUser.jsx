@@ -21,6 +21,18 @@ const FormEditUser = () => {
 
   const { user } = useSelector((state) => state.auth); 
 
+  const generarUsername = (nombre, rolSeleccionado) => {
+    if (!nombre || !rolSeleccionado) return;
+
+    const primerNombre = nombre.split(" ")[0].toLowerCase();
+    
+    const rolNombre = roles.find((r) => r.ID_ROL === parseInt(rolSeleccionado))?.NOMBRE_ROL.toLowerCase();
+    
+    if (primerNombre && rolNombre) {
+      setUsername(`${primerNombre}_${rolNombre}`);
+    }
+  };
+
   useEffect(() => {
     const obtenerPorId = async () => {
       try {
@@ -34,6 +46,8 @@ const FormEditUser = () => {
         setPassword(""); 
         setConfPassword("");
         setRol(response.data.ID_ROL);
+
+        generarUsername(response.data.NOMBRE_USUARIO, response.data.ID_ROL);
       } catch (error) {
         if (error.response) {
           setMsg(error.response.data.msg);
@@ -54,6 +68,17 @@ const FormEditUser = () => {
     cargarRoles();
   }, [id]);
 
+  const handleNombresChange = (e) => {
+    const nuevoNombre = e.target.value;
+    setNombres(nuevoNombre);
+    generarUsername(nuevoNombre, rol); 
+  };
+
+  const handleRolChange = (e) => {
+    const nuevoRol = e.target.value;
+    setRol(nuevoRol);
+    generarUsername(nombres, nuevoRol);
+  };
 
   const actualizar = async (e) => {
     e.preventDefault();
@@ -86,9 +111,8 @@ const FormEditUser = () => {
       <h1 className="title-form">Actualizar Usuarios</h1>
 
       <div className="contenedor">
-
         <form onSubmit={actualizar}>
-          <p style={{color:'red'}}> {msg}</p>
+          <p style={{ color: 'red' }}> {msg}</p>
 
           <div className="row">
             <div className="col-25">
@@ -114,7 +138,8 @@ const FormEditUser = () => {
                 className="input-form"
                 type="text"
                 value={nombres || ""}
-                onChange={(e) => setNombres(e.target.value)}
+                onChange={handleNombresChange}
+                style={{ textTransform: 'capitalize' }}
                 placeholder="Nombres"
               />
             </div>
@@ -130,22 +155,8 @@ const FormEditUser = () => {
                 type="text"
                 value={apellidos || ""}
                 onChange={(e) => setApellidos(e.target.value)}
+                style={{ textTransform: 'capitalize' }}
                 placeholder="Apellidos"
-              />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-25">
-              <label className="label-form">Username</label>
-            </div>
-            <div className="col-75">
-              <input
-                className="input-form"
-                type="text"
-                value={username || ""}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
               />
             </div>
           </div>
@@ -167,7 +178,7 @@ const FormEditUser = () => {
 
           <div className="row">
             <div className="col-25">
-              <label className="label-form">Telefono</label>
+              <label className="label-form">Teléfono</label>
             </div>
             <div className="col-75">
               <input
@@ -219,7 +230,7 @@ const FormEditUser = () => {
                 <select
                   className="input-form"
                   value={rol || ""}
-                  onChange={(e) => setRol(e.target.value)}
+                  onChange={handleRolChange}
                 >
                   <option value="">Seleccione un rol</option>
                   {roles.map((role) => (
