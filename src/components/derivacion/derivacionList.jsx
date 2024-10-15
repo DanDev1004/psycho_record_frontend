@@ -11,6 +11,8 @@ import {
     newspaperOutline
 } from "ionicons/icons";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+import { detectarEnter } from "../../utils/utils";
 
 const DerivacionList = () => {
     const [derivaciones, setDerivaciones] = useState([]);
@@ -18,43 +20,35 @@ const DerivacionList = () => {
     const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        obtenerDerivaciones();
+        obtenerTodos();
     }, []);
 
-    const obtenerDerivaciones = async () => {
+    const obtenerTodos = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/derivacion");
-
+            const response = await axios.get(ENDPOINTS.DERIVACION.OBTENER_TODOS);
             setDerivaciones(response.data.reverse());
         } catch (error) {
             console.error("Error al obtener las derivaciones", error);
         }
     };
 
-    const buscarDerivacion = async () => {
+    const buscar = async () => {
         try {
-            const response = await axios.post("http://localhost:5000/derivacion/buscar", {
+            const response = await axios.post(ENDPOINTS.DERIVACION.BUSCAR, {
                 searchText: searchText,
             });
-            setDerivaciones(response.data);
+            setDerivaciones(response.data.reverse());
         } catch (error) {
             console.error("Error al buscar derivaciones", error);
         }
     };
 
-    const detectarEnter = (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            buscarDerivacion();
-        }
-    };
-
-    const eliminarDerivacion = async (id) => {
+    const eliminar = async (id) => {
         const confirmacion = window.confirm("¿Estás seguro de eliminar esta derivación?");
         if (confirmacion) {
             try {
-                await axios.delete(`http://localhost:5000/derivacion/${id}`);
-                obtenerDerivaciones();
+                await axios.delete(ENDPOINTS.DERIVACION.ELIMINAR(id));
+                obtenerTodos();
             } catch (error) {
                 console.error("Error al eliminar la derivación", error);
             }
@@ -109,6 +103,17 @@ const DerivacionList = () => {
                                 </Link>
                             )}
 
+                            {row.original.RECIBIDO && (
+                                <Link
+                                    className="btn-gray"
+                                    to={``}
+                                    disabled
+                                    style={{ cursor: 'default' }}
+                                >
+                                    <IonIcon icon={createOutline} />
+                                </Link>
+                            )}
+
                             <Link
                                 className="btn-details"
                                 to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
@@ -119,7 +124,7 @@ const DerivacionList = () => {
 
                             <Link
                                 className="btn-delete"
-                                onClick={() => eliminarDerivacion(row.original.ID_DERIVACION)}
+                                onClick={() => eliminar(row.original.ID_DERIVACION)}
                                 title="Eliminar"
                             >
                                 <IonIcon icon={trashOutline} />
@@ -178,9 +183,9 @@ const DerivacionList = () => {
                             placeholder="Buscar alumno por nombre o apellidos"
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
-                            onKeyDown={detectarEnter}
+                            onKeyDown={(e) => detectarEnter(e, buscar)}
                         />
-                        <IonIcon icon={searchOutline} onClick={buscarDerivacion} />
+                        <IonIcon icon={searchOutline} onClick={buscar} />
                     </label>
                 </div>
                 <Link to="/derivacion/add" className="btn">

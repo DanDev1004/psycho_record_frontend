@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, NavLink } from "react-router-dom";
-import { formatearFecha, convertirRomanos, calcularEdad } from '../../utils/utils'
 import "../../assets/styles/Form.css";
+
+import { formatearFecha, convertirRomanos, calcularEdad } from '../../utils/utils'
+import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const DetailsAlumno = () => {
     const { id } = useParams();
     const [alumno, setAlumno] = useState(null);
 
     useEffect(() => {
-        const obtenerAlumno = async () => {
+        const obtenerPorId = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/alumno/${id}`);
+                const response = await axios.get(ENDPOINTS.ALUMNO.OBTENER_POR_ID(id));
                 setAlumno(response.data);
             } catch (error) {
                 console.error("Error al obtener el alumno", error);
             }
         };
-        obtenerAlumno();
+        obtenerPorId();
     }, [id]);
 
     if (!alumno) {
@@ -76,7 +78,7 @@ const DetailsAlumno = () => {
                         <strong>Teléfono:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.TELEFONO || "No disponible"}
+                        {alumno.TELEFONO || "------------"}
                     </div>
                 </div>
 
@@ -103,7 +105,7 @@ const DetailsAlumno = () => {
                         <strong>Programa de estudio:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.AREA_PE ? alumno.AREA_PE.NOMBRE_AREA_PE : "No disponible"}
+                        {alumno.AREA_PE ? alumno.AREA_PE.NOMBRE_AREA_PE : "------------"}
                     </div>
                 </div>
 
@@ -114,7 +116,7 @@ const DetailsAlumno = () => {
                         <strong>Dirección Nacional:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.DIR_NAC || "No disponible"}
+                        {alumno.DIR_NAC || "------------"}
                     </div>
                 </div>
 
@@ -123,7 +125,7 @@ const DetailsAlumno = () => {
                         <strong>Fecha de Nacimiento:</strong>
                     </div>
                     <div className="col-75">
-                        {formatearFecha(alumno.FECH_NAC) || "No disponible"}
+                        {formatearFecha(alumno.FECH_NAC) || "------------"}
                     </div>
                 </div>
 
@@ -132,7 +134,7 @@ const DetailsAlumno = () => {
                         <strong>Edad:</strong>
                     </div>
                     <div className="col-75">
-                        {calcularEdad(alumno.FECH_NAC) || "No disponible"}
+                        {calcularEdad(alumno.FECH_NAC) || "------------"}
                     </div>
                 </div>
 
@@ -141,7 +143,7 @@ const DetailsAlumno = () => {
                         <strong>Domicilio:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.DOMICILIO || "No disponible"}
+                        {alumno.DOMICILIO || "------------"}
                     </div>
                 </div>
 
@@ -150,7 +152,7 @@ const DetailsAlumno = () => {
                         <strong>Estado Civil:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.ESTADO_CIVIL ? alumno.ESTADO_CIVIL.NOMBRE_EC : "No disponible"}
+                        {alumno.ESTADO_CIVIL ? alumno.ESTADO_CIVIL.NOMBRE_EC : "------------"}
                     </div>
                 </div>
 
@@ -159,7 +161,7 @@ const DetailsAlumno = () => {
                         <strong>Religión:</strong>
                     </div>
                     <div className="col-75">
-                        {alumno.RELIGION ? alumno.RELIGION.NOMBRE_RELIGION : "No disponible"}
+                        {alumno.RELIGION ? alumno.RELIGION.NOMBRE_RELIGION : "------------"}
                     </div>
                 </div>
 

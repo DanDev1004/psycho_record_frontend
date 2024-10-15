@@ -3,6 +3,8 @@ import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../assets/styles/Form.css";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
 const FormAddUser = () => {
   const [dni, setDni] = useState("");
   const [nombres, setNombres] = useState("");
@@ -20,7 +22,7 @@ const FormAddUser = () => {
   useEffect(() => {
     const cargarRoles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/rol");
+        const response = await axios.get(ENDPOINTS.ROL.OBTENER_TODOS);
         setRoles(response.data);
       } catch (error) {
         console.error("Error al cargar los roles", error);
@@ -53,7 +55,7 @@ const FormAddUser = () => {
     generarUsername(nombres, nuevoRol); 
   };
 
-  const saveUser = async (e) => {
+  const crear = async (e) => {
     e.preventDefault();
 
     if (!dni || !nombres || !apellidos || !username || !email) {
@@ -62,7 +64,7 @@ const FormAddUser = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/usuario", {
+      await axios.post(ENDPOINTS.USUARIO.CREAR, {
         DNI_USUARIO: dni,
         NOMBRE_USUARIO: nombres,
         APELLIDO_USUARIO: apellidos,
@@ -90,7 +92,7 @@ const FormAddUser = () => {
       <h1 className="title-form">Agregar Usuarios</h1>
 
       <div className="contenedor">
-        <form onSubmit={saveUser}>
+        <form onSubmit={crear}>
           <p style={{ color: 'red' }}>{msg}</p>
 
           <div className="row">
@@ -102,8 +104,15 @@ const FormAddUser = () => {
                 className="input-form"
                 type="text"
                 value={dni}
-                onChange={(e) => setDni(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  //regex
+                  if (/^\d{0,8}$/.test(value)) {
+                      setDni(e.target.value);
+                  }
+              }}
                 placeholder="DNI"
+                required
               />
             </div>
           </div>
@@ -120,6 +129,7 @@ const FormAddUser = () => {
                 onChange={handleNombresChange}
                 style={{ textTransform: 'capitalize' }}
                 placeholder="Nombres"
+                required
               />
             </div>
           </div>
@@ -136,6 +146,7 @@ const FormAddUser = () => {
                 onChange={(e) => setApellidos(e.target.value)}
                 style={{ textTransform: 'capitalize' }}
                 placeholder="Apellidos"
+                required
               />
             </div>
           </div>
@@ -164,7 +175,13 @@ const FormAddUser = () => {
                 className="input-form"
                 type="text"
                 value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  //regex
+                  if (/^\d{0,9}$/.test(value)) {
+                      setTelefono(value);
+                  }
+              }}
                 placeholder="987654321"
               />
             </div>
@@ -181,6 +198,7 @@ const FormAddUser = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="******"
+                required
               />
             </div>
           </div>
@@ -196,6 +214,7 @@ const FormAddUser = () => {
                 value={confPassword}
                 onChange={(e) => setConfPassword(e.target.value)}
                 placeholder="******"
+                required
               />
             </div>
           </div>
@@ -209,6 +228,7 @@ const FormAddUser = () => {
                 className="input-form"
                 value={rol}
                 onChange={handleRolChange}
+                required
               >
                 <option value="">Seleccionar un rol</option>
                 {roles.map((role) => (

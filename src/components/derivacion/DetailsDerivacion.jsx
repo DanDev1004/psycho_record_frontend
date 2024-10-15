@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, NavLink } from "react-router-dom";
-import {
-    trashOutline,
-    createOutline
-} from "ionicons/icons";
 import "../../assets/styles/Form.css";
+
+import { formatearFecha } from "../../utils/utils";
+import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const DetailsDerivacion = () => {
     const { id } = useParams();
@@ -13,39 +12,21 @@ const DetailsDerivacion = () => {
     const [consultaRelacionada, setConsultaRelacionada] = useState(null);
 
     useEffect(() => {
-        const obtenerDerivacion = async () => {
+        const obtenerPorId = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/derivacion/${id}`);
-                setDerivacion(response.data);
-    
+                const derivacionResponse = await axios.get(ENDPOINTS.DERIVACION.OBTENER_POR_ID(id));
+                setDerivacion(derivacionResponse.data);
 
-                const consultaResponse = await axios.get(`http://localhost:5000/consulta`);
+                const consultaResponse = await axios.get(ENDPOINTS.DERIVACION.OBTENER_FECHA_CONSULTA(id));
+                setConsultaRelacionada(consultaResponse.data);
                 
-                const consultasDerivacion = consultaResponse.data.filter(
-                    consulta => consulta.TIPO_DERIVACION === 3
-                );
-                
-                const consultaRelacionada = consultasDerivacion.find(
-                    consulta => consulta.DERIVACION && consulta.DERIVACION.ID_DERIVACION === response.data.ID_DERIVACION
-                );
-    
-                setConsultaRelacionada(consultaRelacionada);
-    
             } catch (error) {
                 console.error("Error al obtener la derivación o la consulta relacionada", error);
             }
         };
-    
-        obtenerDerivacion();
-    }, [id]);
 
-    const formatearFecha = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate() + 1).padStart(2, '0');
-        return `${day}-${month}-${year}`;
-    };
+        obtenerPorId();
+    }, [id]);
 
     if (!derivacion) {
         return <div>Cargando...</div>;
@@ -109,7 +90,7 @@ const DetailsDerivacion = () => {
                             <strong>Fecha de Atención:</strong>
                         </div>
                         <div className="col-75">
-                            {formatearFecha(consultaRelacionada.FECHA_ATENCION)} {consultaRelacionada.HORA_INICIO} {consultaRelacionada.HORA_FIN}
+                            {formatearFecha(consultaRelacionada.fecha_atencion)} | {consultaRelacionada.hora_inicio} - {consultaRelacionada.hora_fin}
                         </div>
                     </div>
                 )}

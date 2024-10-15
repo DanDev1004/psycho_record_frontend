@@ -1,6 +1,13 @@
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const ENDPOINTS = {
+    // Autenticación
+    AUTH: {
+        LOGIN: `${BASE_URL}/login`,
+        LOGOUT: `${BASE_URL}/logout`,
+        ME: `${BASE_URL}/me`,
+    },
+    
     //PRINCIPAL
     USUARIO: {
         OBTENER_POR_ID: (id) => `${BASE_URL}/usuario/${id}`,
@@ -25,6 +32,7 @@ export const ENDPOINTS = {
         ACTUALIZAR: (id) => `${BASE_URL}/derivacion/${id}`,
         ELIMINAR: (id) => `${BASE_URL}/derivacion/${id}`,
         BUSCAR: `${BASE_URL}/derivacion/buscar`,
+        OBTENER_FECHA_CONSULTA: (id) => `${BASE_URL}/derivacion/${id}/consulta`
     },
     CONSULTAPS: {
         OBTENER_POR_ID: (id) => `${BASE_URL}/consulta/${id}`,

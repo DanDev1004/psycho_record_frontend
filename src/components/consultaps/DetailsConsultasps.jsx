@@ -6,6 +6,8 @@ import { IonIcon } from '@ionic/react';
 import {
     trashOutline
 } from "ionicons/icons";
+import { ENDPOINTS } from "../../api/apiEndPoints";
+import { formatearFecha } from "../../utils/utils";
 
 const DetailsConsultaPs = () => {
     const { id } = useParams();
@@ -13,43 +15,34 @@ const DetailsConsultaPs = () => {
     const [diagnosticos, setDiagnosticos] = useState([]);
 
     useEffect(() => {
-        const obtenerConsulta = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/consulta/${id}`);
-                setConsulta(response.data);
-            } catch (error) {
-                console.error("Error al obtener la consulta", error);
-            }
-        };
-
-        const obtenerDiagnosticos = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/diagnostico/consulta/${id}`);
-                setDiagnosticos(response.data);
-            } catch (error) {
-                console.error("Error al obtener los diagnósticos", error);
-            }
-        };
-
         obtenerConsulta();
         obtenerDiagnosticos();
     }, [id]);
 
-    const formatearFecha = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate() + 1).padStart(2, '0');
-        return `${day}-${month}-${year}`;
+    const obtenerConsulta = async () => {
+        try {
+            const response = await axios.get(ENDPOINTS.CONSULTAPS.OBTENER_POR_ID(id));
+            setConsulta(response.data);
+        } catch (error) {
+            console.error("Error al obtener la consulta", error);
+        }
+    };
+
+    const obtenerDiagnosticos = async () => {
+        try {
+            const response = await axios.get(ENDPOINTS.DIAGNOSTICO.OBTENER_POR_CONSULTA(id));
+            setDiagnosticos(response.data.reverse());
+        } catch (error) {
+            console.error("Error al obtener los diagnósticos", error);
+        }
     };
 
     const eliminarDiagnostico = async (diagnosticoId) => {
         const confirmacion = window.confirm("¿Estás seguro de eliminar este diagnóstico?");
         if (confirmacion) {
             try {
-                await axios.delete(`http://localhost:5000/diagnostico/${diagnosticoId}`);
-                setDiagnosticos(diagnosticos.filter(d => d.ID_DIAGNOSTICO !== diagnosticoId));
-                window.location.reload();
+                await axios.delete(ENDPOINTS.DIAGNOSTICO.ELIMINAR(diagnosticoId));
+                obtenerDiagnosticos()
             } catch (error) {
                 console.error("Error al eliminar el diagnóstico", error);
             }
@@ -252,7 +245,7 @@ const DetailsConsultaPs = () => {
                         <tbody>
                             {diagnosticos.map((diagnostico, index) => (
                                 <tr key={diagnostico.ID_DIAGNOSTICO}>
-                                    <td>{index + 1}</td>
+                                    <td>{diagnosticos.length - index}</td>
                                     <td>{diagnostico.CONDICION?.NOMBRE_CONDICION || 'No especificada'}</td>
                                     <td>{diagnostico.DESCRIPCION || 'Sin descripción'}</td>
                                     <td>

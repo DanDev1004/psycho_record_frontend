@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import "../../assets/styles/Form.css";
+import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const FormEditConsultasPs = () => {
     const [consulta, setConsulta] = useState(null);
@@ -22,9 +23,9 @@ const FormEditConsultasPs = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        const cargarDatos = async () => {
+        const obtenerPorId = async () => {
             try {
-                const consultaResponse = await axios.get(`http://localhost:5000/consulta/${id}`);
+                const consultaResponse = await axios.get(ENDPOINTS.CONSULTAPS.ACTUALIZAR(id));
                 const consultaData = consultaResponse.data;
 
                 setConsulta(consultaData);
@@ -53,14 +54,14 @@ const FormEditConsultasPs = () => {
             }
         };
 
-        cargarDatos();
+        obtenerPorId();
     }, [id]);
 
 
     const actualizarConsulta = async (e) => {
         e.preventDefault();
         try {
-            await axios.patch(`http://localhost:5000/consulta/${id}`, {
+            await axios.patch(ENDPOINTS.CONSULTAPS.ACTUALIZAR(id), {
                 FECHA_ATENCION: fechaAtencion,
                 HORA_INICIO: horaInicio,
                 HORA_FIN: horaFin,

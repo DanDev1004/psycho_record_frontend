@@ -3,6 +3,8 @@ import axios from "axios";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import "../../assets/styles/Form.css";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
 const FormEditDerivacion = () => {
     const [usuario, setUsuario] = useState("");
     const [alumno, setAlumno] = useState("");
@@ -15,7 +17,7 @@ const FormEditDerivacion = () => {
     useEffect(() => {
         const obtenerDerivacionPorId = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/derivacion/${id}`);
+                const response = await axios.get(ENDPOINTS.DERIVACION.OBTENER_POR_ID(id));
                 const derivacion = response.data;
 
                 setUsuario(`${derivacion.USUARIO.NOMBRE_USUARIO} ${derivacion.USUARIO.APELLIDO_USUARIO}`);
@@ -35,7 +37,7 @@ const FormEditDerivacion = () => {
     const actualizarDerivacion = async (e) => {
         e.preventDefault();
         try {
-            await axios.patch(`http://localhost:5000/derivacion/${id}`, {
+            await axios.patch(ENDPOINTS.DERIVACION.ACTUALIZAR(id), {
                 MOTIVO: motivo,
                 URGENCIA: Number(urgencia),
             });

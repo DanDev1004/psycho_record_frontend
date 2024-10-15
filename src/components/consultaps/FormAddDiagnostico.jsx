@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "../../assets/styles/Form.css";
+import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const FormAddDiagnostico = () => {
     const { id } = useParams(); 
@@ -16,7 +17,7 @@ const FormAddDiagnostico = () => {
     useEffect(() => {
         const obtenerCategorias = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/catcond");
+                const response = await axios.get(ENDPOINTS.CATCOND.OBTENER_TODOS);
                 setCategorias(response.data.map(categoria => ({
                     value: categoria.ID_CAT_COND,
                     label: categoria.NOMBRE_CAT_COND
@@ -33,7 +34,7 @@ const FormAddDiagnostico = () => {
         if (selectedCategoria) {
             const obtenerCondiciones = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/condiciones/categoria/${selectedCategoria.value}`);
+                    const response = await axios.get(ENDPOINTS.CONDICION.OBTENER_POR_CATEGORIA(selectedCategoria.value));
                     setCondiciones(response.data.map(condicion => ({
                         value: condicion.ID_CONDICION,
                         label: condicion.NOMBRE_CONDICION
@@ -49,10 +50,10 @@ const FormAddDiagnostico = () => {
         }
     }, [selectedCategoria]);
 
-    const guardarDiagnostico = async (e) => {
+    const crear = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5000/diagnostico", {
+            await axios.post(ENDPOINTS.DIAGNOSTICO.CREAR, {
                 ID_CONSULTA_PS: id, 
                 ID_CONDICION: selectedCondicion ? selectedCondicion.value : null,
                 DESCRIPCION: descripcion
@@ -68,7 +69,7 @@ const FormAddDiagnostico = () => {
             <button className="btn-regresar" onClick={() => navigate(`/Consultasps/detail/${id}`)}>Regresar</button>
 
             <h1 className="title-form">Agregar Diagnóstico</h1>
-            <form onSubmit={guardarDiagnostico}>
+            <form onSubmit={crear}>
                 <div className="row">
                     <div className="col-25">
                         <label className="label-form">Categoría</label>
@@ -79,7 +80,7 @@ const FormAddDiagnostico = () => {
                             onChange={setSelectedCategoria}
                             options={categorias}
                             placeholder="Seleccionar categoría"
-                            className="input-form"  // Aplicación de estilos desde Form.css
+                            className="input-form" 
                             isClearable
                             required
                         />
@@ -96,9 +97,9 @@ const FormAddDiagnostico = () => {
                             onChange={setSelectedCondicion}
                             options={condiciones}
                             placeholder="Seleccionar condición"
-                            className="input-form"  // Aplicación de estilos desde Form.css
+                            className="input-form"  
                             isClearable
-                            isDisabled={!selectedCategoria}  // Deshabilitado si no hay categoría seleccionada
+                            isDisabled={!selectedCategoria}  
                             required
                         />
                     </div>

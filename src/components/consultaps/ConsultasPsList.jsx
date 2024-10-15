@@ -12,138 +12,113 @@ import {
     newspaperOutline
 } from "ionicons/icons";
 
+import { formatearFecha, detectarEnter, calcularEdad, convertirRomanos } from "../../utils/utils";
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
 const ConsultasPsList = () => {
     const [consultas, setConsultas] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [selectedMonth, setSelectedMonth] = useState("");
 
     useEffect(() => {
-        obtenerConsultas();
+        obtenerTodos();
     }, []);
 
-    const obtenerConsultas = async () => {
+    const obtenerTodos = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/consulta");
+            const response = await axios.get(ENDPOINTS.CONSULTAPS.OBTENER_TODOS);
             setConsultas(response.data.reverse());
         } catch (error) {
             console.error("Error al obtener las consultas", error);
         }
     };
 
-    const buscarConsulta = async () => {
+    const buscar = async () => {
         try {
-            const response = await axios.post("http://localhost:5000/consulta/buscar", {
+            const response = await axios.post(ENDPOINTS.CONSULTAPS.BUSCAR, {
                 searchText: searchText,
             });
-            setConsultas(response.data);
+            setConsultas(response.data.reverse());
         } catch (error) {
             console.error("Error al buscar consultas", error);
         }
     };
 
-
-    const eliminarConsulta = async (id) => {
+    const eliminar = async (id) => {
         const confirmacion = window.confirm("¿Estás seguro de eliminar esta consulta?");
-        if(confirmacion){
+        if (confirmacion) {
             try {
-                await axios.delete(`http://localhost:5000/consulta/${id}`);
-                obtenerConsultas();
+                await axios.delete(ENDPOINTS.CONSULTAPS.ELIMINAR(id));
+                obtenerTodos();
             } catch (error) {
                 console.error("Error al eliminar la consulta", error);
             }
         }
     };
 
-    const formatearFecha = (fecha) => {
-        const fechaObjeto = new Date(fecha);
-        const dia = String(fechaObjeto.getUTCDate()).padStart(2, '0');
-        const mes = String(fechaObjeto.getUTCMonth() + 1).padStart(2, '0');
-        const anio = fechaObjeto.getUTCFullYear();
-
-        return `${dia}/${mes}/${anio}`;
-    };
-
-    const detectarEnter = (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            buscarConsulta();
-        }
-    };
-
-    const calcularEdad = (fechaNacimiento) => {
-        const hoy = new Date();
-        const nacimiento = new Date(fechaNacimiento);
-        let edad = hoy.getFullYear() - nacimiento.getFullYear();
-        const mes = hoy.getMonth() - nacimiento.getMonth();
-
-        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
-            edad--;
-        }
-        return edad;
-    };
-
-    const convertirRomanos = (num) => {
-        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-        return numerosRomanos[num - 1] || num;
-    };
-
-
     const generarPDF = async () => {
         if (!selectedMonth) {
             alert("Selecciona un mes y año");
             return;
         }
-    
+
         const [anio, mes] = selectedMonth.split("-");
-    
+        const mesTexto = new Date(anio, mes - 1).toLocaleString('es-ES', { month: 'long' });
+
         try {
-            const response = await axios.post("http://localhost:5000/consulta/filtrarporfecha", {
+            const response = await axios.post(ENDPOINTS.CONSULTAPS.FILTRAR_POR_FECHA, {
                 mes: parseInt(mes),
                 anio: parseInt(anio)
             });
-    
-            console.log(response.data)
+
             const consultasFiltradas = response.data.filter(consulta => consulta.ASISTENCIA === 2);
-    
+            console.log(consultasFiltradas)
+
+            if (consultasFiltradas.length === 0) {
+                alert(`No se encontró ninguna consulta en el mes de ${mesTexto} del ${anio}`);
+                return;
+            }
+
             // documento PDF en modo horizontal
             const doc = new jsPDF('landscape');
-    
+
             // nombre del mes en español
-            const mesTexto = new Date(anio, mes - 1).toLocaleString('es-ES', { month: 'long' });
-    
-            doc.text(`REGISTRO DE ATENCIÓN EN EL SERVICIO DE PSICOLOGÍA EN EL MES DE ${mesTexto.toUpperCase()} - ${anio}`, 10, 10);
-    
+
+
+            doc.text(`REGISTRO DE ATENCIÓN DEL SERVICIO DE PSICOLOGÍA EN EL MES DE ${mesTexto.toUpperCase()} - ${anio}`, 10, 10);
+
             const tableColumn = [
-                "N°", 
-                "APELLIDOS Y NOMBRES", 
-                "EDAD", 
-                "PROGRAMA DE ESTUDIOS", 
-                "SEMESTRE", 
-                "PROBLEMA ACTUAL", 
-                "TTO", 
+                "N°",
+                "APELLIDOS Y NOMBRES",
+                "EDAD",
+                "PROGRAMA DE ESTUDIOS",
+                "SEMESTRE",
+                "PROBLEMA ACTUAL",
+                "TTO",
                 "FECHA Y HORARIO"
             ];
-    
+
             // Generando las filas de la tabla
             const tableRows = consultasFiltradas.map((consulta, index) => {
                 const alumno = consulta.ALUMNO;
-                const edad = calcularEdad(alumno.FECH_NAC);  
+                const edad = calcularEdad(alumno.FECH_NAC);
                 const cicloRomano = convertirRomanos(alumno.CICLO);
                 const fechaAtencion = new Date(consulta.FECHA_ATENCION).toLocaleDateString();
                 const horario = `${consulta.HORA_INICIO} - ${consulta.HORA_FIN}`;
-    
+
                 return [
-                    index + 1,  
-                    `${alumno.APELLIDOS}, ${alumno.NOMBRES}`, 
-                    edad,  
-                    alumno.AREA_PE?.NOMBRE_AREA_PE || "No disponible", 
-                    cicloRomano,  
-                    consulta.PROBLEMA || "No disponible",  
-                    consulta.RECOMENDACION || "No disponible", 
-                    `${fechaAtencion} (${horario})`  
+                    index + 1,
+                    `${alumno.APELLIDOS}, ${alumno.NOMBRES}`,
+                    edad,
+                    alumno.AREA_PE?.NOMBRE_AREA_PE || "No disponible",
+                    cicloRomano,
+                    consulta.PROBLEMA || "No disponible",
+                    consulta.RECOMENDACION || "No disponible",
+                    `${fechaAtencion} (${horario})`
                 ];
             });
-    
+
+
             // Agregando la tabla al PDF
             doc.autoTable({
                 head: [tableColumn],
@@ -151,14 +126,12 @@ const ConsultasPsList = () => {
                 startY: 20,
                 theme: "striped"
             });
-    
+
             doc.save(`Registro_Atencion_Psicologia_${mesTexto}_${anio}.pdf`);
         } catch (error) {
             console.error("Error al generar el PDF", error);
         }
     };
-    
-    
 
 
 
@@ -169,7 +142,7 @@ const ConsultasPsList = () => {
                 Cell: ({ row }) => consultas.length - row.index,
             },
             {
-                Header: 'Usuario',
+                Header: 'Psicologo/a',
                 accessor: 'USUARIO',
                 Cell: ({ value }) =>
                     value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "------------",
@@ -211,13 +184,13 @@ const ConsultasPsList = () => {
                 Cell: ({ row }) => (
                     <>
                         <Link className="btn-details" to={`/Consultasps/detail/${row.original.ID_CONSULTA_PS}`} title="Detalles">
-                        <IonIcon icon={newspaperOutline} />
+                            <IonIcon icon={newspaperOutline} />
                         </Link>
                         <Link className="btn-edit" to={`/Consultasps/edit/${row.original.ID_CONSULTA_PS}`} title="Editar">
-                        <IonIcon icon={createOutline} />
+                            <IonIcon icon={createOutline} />
                         </Link>
-                        <Link className="btn-delete" onClick={() => eliminarConsulta(row.original.ID_CONSULTA_PS)} title="Eliminar">
-                        <IonIcon icon={trashOutline} />
+                        <Link className="btn-delete" onClick={() => eliminar(row.original.ID_CONSULTA_PS)} title="Eliminar">
+                            <IonIcon icon={trashOutline} />
                         </Link>
                     </>
                 ),
@@ -262,9 +235,9 @@ const ConsultasPsList = () => {
                                 placeholder="Buscar alumno por dni, nombres o apellidos"
                                 value={searchText}
                                 onChange={(e) => setSearchText(e.target.value)}
-                                onKeyDown={detectarEnter}
+                                onKeyDown={(e) => { detectarEnter(e, buscar) }}
                             />
-                            <IonIcon icon={searchOutline} onClick={buscarConsulta} />
+                            <IonIcon icon={searchOutline} onClick={buscar} />
                         </label>
                     </div>
                     <Link to="/Consultasps/add" className="btn">

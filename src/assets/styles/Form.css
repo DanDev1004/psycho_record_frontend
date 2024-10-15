@@ -107,6 +107,11 @@ button {
   box-shadow: inset 0 0 0 4px #c1c1c4;
 }
 
+.opcion-radio .radio_azul:checked + label:before {
+  background-color: var(--blue);
+  box-shadow: inset 0 0 0 4px #c1c1c4;
+}
+
 .opcion-radio label {
   display: inline-block;
   vertical-align: middle;
@@ -124,11 +129,18 @@ button {
     margin-left: 80px;
   }
 
+  
   .button-form {
     width: 100%;
     margin-right: -155px;
   }
 
+  .asistencia {
+    width: 600px;
+  }
+  .asistencia-group{
+    margin-left: -75px;
+  }
 
 }
 

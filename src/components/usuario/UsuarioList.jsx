@@ -10,6 +10,9 @@ import {
   createOutline
 } from "ionicons/icons";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+import { detectarEnter } from "../../utils/utils";
+
 const UsuarioList = () => {
   const [usuarios, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -23,7 +26,7 @@ const UsuarioList = () => {
 
   const obtenerTodos = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/usuario");
+      const response = await axios.get(ENDPOINTS.USUARIO.OBTENER_TODOS);
       const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO).reverse();
       setUsers(filtrarUsuarios); 
     } catch (error) {
@@ -31,31 +34,24 @@ const UsuarioList = () => {
     }
   };
 
-  const buscarUsuario = async () => {
+  const buscar = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/usuario/buscar", {
+      const response = await axios.post(ENDPOINTS.USUARIO.BUSCAR, {
         searchText: searchText.trim()
       });
       const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
-      setUsers(filtrarUsuarios); 
+      setUsers(filtrarUsuarios.reverse()); 
     } catch (error) {
       console.error("Error al buscar usuarios:", error);
     }
   };
 
-  const detectarEnter = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault(); 
-      buscarUsuario(); 
-    }
-  };
-
-  const eliminar = async (userId) => { 
+  const eliminar = async (id) => { 
     const confirmacion = window.confirm("¿Estás seguro de eliminar este usuario?");
 
     if(confirmacion){
       try {
-        await axios.delete(`http://localhost:5000/usuario/${userId}`);
+        await axios.delete(ENDPOINTS.USUARIO.ELIMINAR(id));
         obtenerTodos();
       } catch (error) {
         console.error("Error al eliminar usuario:", error);
@@ -149,9 +145,9 @@ const UsuarioList = () => {
               placeholder="DNI, nombres o apellidos" 
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={detectarEnter}
+              onKeyDown={(e) => detectarEnter(e,buscar)}
             />
-            <IonIcon icon={searchOutline} onClick={buscarUsuario}/>
+            <IonIcon icon={searchOutline} onClick={buscar}/>
           </label>
         </div>
 
@@ -196,7 +192,7 @@ const UsuarioList = () => {
             );
         })}
     </tbody>
-</table>
+      </table>
 
       <div className="pagination">
         <span>

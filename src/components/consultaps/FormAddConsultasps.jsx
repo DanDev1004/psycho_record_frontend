@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Select from "react-select";  
+import Select from "react-select";
 import "../../assets/styles/Form.css";
+import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const FormAddConsultasPs = () => {
     const { user } = useSelector((state) => state.auth);
@@ -11,8 +12,8 @@ const FormAddConsultasPs = () => {
     const [derivaciones, setDerivaciones] = useState([]);
     const [tipoDerivacion, setTipoDerivacion] = useState(1);
 
-    const [alumno, setAlumno] = useState(null);  
-    const [alumnoDerivFam, setAlumnoDerivFam] = useState(null);  
+    const [alumno, setAlumno] = useState(null);
+    const [alumnoDerivFam, setAlumnoDerivFam] = useState(null);
     const [familiar, setFamiliar] = useState("");
     const [derivacion, setDerivacion] = useState("");
 
@@ -31,11 +32,12 @@ const FormAddConsultasPs = () => {
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
     const { idAlumno } = useParams();
+
     useEffect(() => {
         const cargarDatos = async () => {
             try {
-                const alumnosResponse = await axios.get("http://localhost:5000/alumno");
-                const derivacionesResponse = await axios.get("http://localhost:5000/derivacion");
+                const alumnosResponse = await axios.get(ENDPOINTS.ALUMNO.OBTENER_TODOS);
+                const derivacionesResponse = await axios.get(ENDPOINTS.DERIVACION.OBTENER_TODOS);
 
                 const alumnosOptions = alumnosResponse.data.map(alumno => ({
                     value: alumno.ID_ALUMNO,
@@ -89,14 +91,15 @@ const FormAddConsultasPs = () => {
         setAlumnoDerivFam(null);
         setFamiliar("");
         setDerivacion("");
+        setMotivo("");
     };
 
 
 
-    const guardarConsulta = async (e) => {
+    const crear = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5000/consulta", {
+            await axios.post(ENDPOINTS.CONSULTAPS.CREAR, {
                 ID_USUARIO: user?.ID_USUARIO,
                 TIPO_DERIVACION: tipoDerivacion,
                 ID_ALUMNO: tipoDerivacion === 1 ? alumno?.value : tipoDerivacion === 2 ? alumnoDerivFam?.value : tipoDerivacion === 3 ? alumno?.value : "",
@@ -130,7 +133,7 @@ const FormAddConsultasPs = () => {
             <h1 className="title-form">Agregar Consulta Psicológica</h1>
 
             <div className="contenedor">
-                <form onSubmit={guardarConsulta}>
+                <form onSubmit={crear}>
                     <p className="msg">{msg}</p>
 
                     <div className="row">
@@ -142,7 +145,7 @@ const FormAddConsultasPs = () => {
                                 className="input-form"
                                 value={tipoDerivacion}
                                 onChange={tipoDerivacionCambio}
-                                disabled={!!idAlumno} 
+                                disabled={!!idAlumno}
                                 required
                             >
                                 <option value={1}>Autónomo</option>
@@ -164,8 +167,8 @@ const FormAddConsultasPs = () => {
                                     onChange={setAlumno}
                                     className="input-form"
                                     placeholder="Seleccionar alumno"
-                                    isDisabled={!!idAlumno} 
-               
+                                    isDisabled={!!idAlumno}
+
                                     required
                                 />
                             </div>
@@ -299,14 +302,14 @@ const FormAddConsultasPs = () => {
                         </div>
                     </div>
 
-                    <div className="row">
+                    <div className="row asistencia">
                         <div className="col-25">
                             <label className="label-form">Asistencia</label>
                         </div>
 
                         <div className="col-75 caja-radio-button">
                             <div className="opciones-radio">
-                                <div className="form-group">
+                                <div className="form-group asistencia-group">
                                     <span className="opcion-radio">
                                         <input
                                             type="radio"
@@ -315,11 +318,11 @@ const FormAddConsultasPs = () => {
                                             value="1"
                                             checked={asistencia === 1}
                                             onChange={(e) => setAsistencia(Number(e.target.value))}
-                                            className="radio_baja"
+                                            className="radio_azul"
                                         />
                                         <label htmlFor="urgencia_baja">Pendiente</label>
                                     </span>
-                                    
+
                                     <span className="opcion-radio">
                                         <input
                                             type="radio"
@@ -328,7 +331,7 @@ const FormAddConsultasPs = () => {
                                             value="2"
                                             checked={asistencia === 2}
                                             onChange={(e) => setAsistencia(Number(e.target.value))}
-                                            className="radio_media"
+                                            className="radio_azul"
                                         />
                                         <label htmlFor="urgencia_media">Asistido</label>
                                     </span>

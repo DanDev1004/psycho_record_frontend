@@ -391,6 +391,16 @@ body {
   border-radius: 6px;
 }
 
+.btn-gray {
+  position: relative;
+  padding: 8px 10px;
+  background: gray;
+  text-decoration: none;
+  color: var(--white);
+  border-radius: 6px;
+  margin-right: 1px;
+}
+
 .pagination {
   display: flex;
   justify-content: flex-start;

@@ -4,6 +4,10 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import "../../assets/styles/Form.css";
 
+import { convertirRomanos } from "../../utils/utils";
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
+
 const FormEditAlumno = () => {
     const { id } = useParams();
     const [dni, setDni] = useState("");
@@ -34,7 +38,7 @@ const FormEditAlumno = () => {
     useEffect(() => {
         const obtenerPorId = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/alumno/${id}`);
+                const response = await axios.get(ENDPOINTS.ALUMNO.OBTENER_POR_ID(id));
                 setDni(response.data.DNI);
                 setNombres(response.data.NOMBRES);
                 setApellidos(response.data.APELLIDOS);
@@ -74,7 +78,7 @@ const FormEditAlumno = () => {
 
         const cargarReligiones = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/religion");
+                const response = await axios.get(ENDPOINTS.RELIGION.OBTENER_TODOS);
                 const options = response.data.map((religion) => ({
                     value: religion.ID_RELIGION,
                     label: religion.NOMBRE_RELIGION,
@@ -84,10 +88,9 @@ const FormEditAlumno = () => {
                 console.error("Error al cargar las religiones", error);
             }
         };
-
         const cargarEstadosCiviles = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/estadoCivil");
+                const response = await axios.get(ENDPOINTS.ESTADOCIVIL.OBTENER_TODOS);
                 const options = response.data.map((estado) => ({
                     value: estado.ID_EC,
                     label: estado.NOMBRE_EC,
@@ -97,17 +100,16 @@ const FormEditAlumno = () => {
                 console.error("Error al cargar los estados civiles", error);
             }
         };
-
         const cargarAreasPe = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/areaPe");
+                const response = await axios.get(ENDPOINTS.AREAPE.OBTENER_TODOS);
                 const options = response.data.map((areaPe) => ({
                     value: areaPe.ID_AREA_PE,
                     label: areaPe.NOMBRE_AREA_PE,
                 }));
                 setAreaPeOptions(options);
             } catch (error) {
-                console.error("Error al cargar las áreas PE", error);
+                console.error("Error al cargar los progrmas de estudio", error);
             }
         };
 
@@ -126,10 +128,10 @@ const FormEditAlumno = () => {
         cargarCiclos(); 
     }, [id]);
 
-    const updateAlumno = async (e) => {
+    const actualizar = async (e) => {
         e.preventDefault();
         try {
-            await axios.patch(`http://localhost:5000/alumno/${id}`, {
+            await axios.patch(ENDPOINTS.ALUMNO.ACTUALIZAR(id), {
                 DNI: dni,
                 NOMBRES: nombres,
                 APELLIDOS: apellidos,
@@ -152,10 +154,6 @@ const FormEditAlumno = () => {
         }
     };
 
-    const convertirRomanos = (num) => {
-        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-        return numerosRomanos[num - 1] || num;
-    };
 
     return (
         <div>
@@ -166,7 +164,7 @@ const FormEditAlumno = () => {
             <h1 className="title-form">Actualizar Alumno</h1>
 
             <div className="contenedor">
-                <form onSubmit={updateAlumno}>
+                <form onSubmit={actualizar}>
                 <p style={{color:'red'}}> {msg}</p>
 
                     <div className="row">
@@ -178,7 +176,13 @@ const FormEditAlumno = () => {
                                 className="input-form"
                                 type="text"
                                 value={dni || ""}
-                                onChange={(e) => setDni(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    //regex
+                                    if (/^\d{0,8}$/.test(value)) {
+                                        setDni(e.target.value);
+                                    }
+                                }}
                                 placeholder="DNI"
                             />
                         </div>
@@ -256,7 +260,13 @@ const FormEditAlumno = () => {
                                 className="input-form"
                                 type="text"
                                 value={telefono || ""}
-                                onChange={(e) => setTelefono(e.target.value)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    //regex
+                                    if (/^\d{0,9}$/.test(value)) {
+                                        setTelefono(value);
+                                    }
+                                }}
                                 placeholder="Teléfono"
                             />
                         </div>

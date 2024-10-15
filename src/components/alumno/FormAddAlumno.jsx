@@ -4,6 +4,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import "../../assets/styles/Form.css";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+import { obtenerFechaActual, convertirRomanos } from "../../utils/utils";
+
 const FormAddAlumno = () => {
     const [dni, setDni] = useState("");
     const [nombres, setNombres] = useState("");
@@ -24,16 +27,13 @@ const FormAddAlumno = () => {
     const [areaPeOptions, setAreaPeOptions] = useState([]); 
     const [cicloOptions, setCicloOptions] = useState([]);
 
-    const [areasPe, setAreasPe] = useState([]);
-
-
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
         const cargarReligiones = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/religion");
+                const response = await axios.get(ENDPOINTS.RELIGION.OBTENER_TODOS);
                 const ListaOpciones = response.data.map(religion => ({
                     value: religion.ID_RELIGION,
                     label: religion.NOMBRE_RELIGION,
@@ -46,7 +46,7 @@ const FormAddAlumno = () => {
 
         const cargarEstadosCiviles = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/estadoCivil");
+                const response = await axios.get(ENDPOINTS.ESTADOCIVIL.OBTENER_TODOS);
                 const ListaOpciones = response.data.map(estadoCivil => ({
                     value: estadoCivil.ID_EC,
                     label: estadoCivil.NOMBRE_EC,
@@ -59,14 +59,14 @@ const FormAddAlumno = () => {
 
         const cargarAreasPe = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/areaPe");
+                const response = await axios.get(ENDPOINTS.AREAPE.OBTENER_TODOS);
                 const ListaOpciones = response.data.map(areaPe => ({
                     value: areaPe.ID_AREA_PE,
                     label: areaPe.NOMBRE_AREA_PE,
                 }));
                 setAreaPeOptions(ListaOpciones);
             } catch (error) {
-                console.error("Error al cargar las áreas PE", error);
+                console.error("Error al cargar los programas de estudio", error);
             }
         };
 
@@ -84,10 +84,10 @@ const FormAddAlumno = () => {
         cargarCiclos();
     }, []);
 
-    const saveAlumno = async (e) => {
+    const crear = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:5000/alumno", {
+            await axios.post(ENDPOINTS.ALUMNO.CREAR, {
                 DNI: dni,
                 NOMBRES: nombres,
                 APELLIDOS: apellidos,
@@ -110,11 +110,6 @@ const FormAddAlumno = () => {
         }
     };
 
-    const convertirRomanos = (num) => {
-        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-        return numerosRomanos[num - 1] || num;
-    };
-
     return (
         <div>
             <NavLink to={"/alumnos"}>
@@ -124,7 +119,7 @@ const FormAddAlumno = () => {
             <h1 className="title-form">Agregar Alumno</h1>
 
             <div className="contenedor">
-                <form onSubmit={saveAlumno}>
+                <form onSubmit={crear}>
                 <p style={{color:'red'}}> {msg}</p>
 
                     <div className="row">
@@ -160,6 +155,7 @@ const FormAddAlumno = () => {
                                 onChange={(e) => setNombres(e.target.value)}
                                 style={{ textTransform: 'capitalize' }}
                                 placeholder="Nombres"
+                                required
                             />
                         </div>
                     </div>
@@ -176,6 +172,7 @@ const FormAddAlumno = () => {
                                 onChange={(e) => setApellidos(e.target.value)}
                                 style={{ textTransform: 'capitalize' }}
                                 placeholder="Apellidos"
+                                required
                             />
                         </div>
                     </div>
@@ -191,7 +188,7 @@ const FormAddAlumno = () => {
                                 onChange={setAreaPe}
                                 className="input-form"
                                 placeholder="Selecciona un programa de estudio"
-                                
+                                required
                             />
                         </div>
                     </div>
@@ -207,6 +204,7 @@ const FormAddAlumno = () => {
                                 onChange={setCiclo}
                                 className="input-form"
                                 placeholder="Selecciona un ciclo"
+                                required
                             />
                         </div>
                     </div>
@@ -220,6 +218,7 @@ const FormAddAlumno = () => {
                                 className="input-form"
                                 value={turno}
                                 onChange={(e) => setTurno(e.target.value)}
+                                required
                             >
                                 <option value="M">Mañana</option>
                                 <option value="T">Tarde</option>
@@ -237,6 +236,7 @@ const FormAddAlumno = () => {
                                 className="input-form"
                                 value={sexo}
                                 onChange={(e) => setSexo(e.target.value)}
+                                required
                             >
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
@@ -323,6 +323,8 @@ const FormAddAlumno = () => {
                                 onChange={(e) => setFechaNacimiento(e.target.value)}
                                 placeholder="Fecha de nacimiento"
                                 min="1970-01-01"
+                                max={obtenerFechaActual()}
+                                required
                             />
                         </div>
                     </div>

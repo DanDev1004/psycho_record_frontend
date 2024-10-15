@@ -5,6 +5,9 @@ import Select from "react-select";
 import { useSelector } from "react-redux";
 import "../../assets/styles/Form.css";
 
+import { convertirRomanos } from "../../utils/utils";
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
 const FormAddDerivacion = () => {
     const { user } = useSelector((state) => state.auth);
     const [usuarios, setUsuarios] = useState([]);
@@ -20,15 +23,11 @@ const FormAddDerivacion = () => {
     const navigate = useNavigate();
     const { idAlumno } = useParams();
 
-    const convertirRomanos = (num) => {
-        const numerosRomanos = ['I', 'II', 'III', 'IV', 'V', 'VI'];
-        return numerosRomanos[num - 1] || num;
-    };
 
     useEffect(() => {
         const cargarUsuariosDocentes = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/usuario");
+                const response = await axios.get(ENDPOINTS.USUARIO.OBTENER_TODOS);
                 const usuariosFiltrados = response.data
                     .filter((usuario) => usuario.ID_ROL === 3)
                     .map((usuario) => ({
@@ -43,7 +42,7 @@ const FormAddDerivacion = () => {
 
         const cargarAlumnos = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/alumno");
+                const response = await axios.get(ENDPOINTS.ALUMNO.OBTENER_TODOS);
                 const alumnoOptions = response.data.map((alumno) => ({
                     value: alumno.ID_ALUMNO,
                     label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE.NOMBRE_AREA_PE} - ${alumno.CICLO}`,
@@ -65,7 +64,7 @@ const FormAddDerivacion = () => {
 
         const cargarAreasPe = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/areape");
+                const response = await axios.get(ENDPOINTS.AREAPE.OBTENER_TODOS);
                 const areasOptions = response.data.map((area) => ({
                     value: area.ID_AREA_PE,
                     label: area.NOMBRE_AREA_PE,
@@ -106,11 +105,11 @@ const FormAddDerivacion = () => {
         { value: 6, label: convertirRomanos(6) }
     ];
 
-    const guardarDerivacion = async (e) => {
+    const crear = async (e) => {
         e.preventDefault();
 
         try {
-            await axios.post("http://localhost:5000/derivacion", {
+            await axios.post(ENDPOINTS.DERIVACION.CREAR, {
                 ID_USUARIO: (user?.ID_ROL === 3 ) ? user.ID_USUARIO : usuario.value,
                 ID_ALUMNO: alumno.value,
                 MOTIVO: motivo,
@@ -131,7 +130,7 @@ const FormAddDerivacion = () => {
             <h1 className="title-form">Agregar Derivación</h1>
 
             <div className="contenedor">
-                <form onSubmit={guardarDerivacion} className="form-container">
+                <form onSubmit={crear} className="form-container">
                     <p>{msg}</p>
 
                     <div className="row">

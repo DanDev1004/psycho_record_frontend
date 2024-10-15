@@ -4,6 +4,8 @@ import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux"; 
 import "../../assets/styles/Form.css";
 
+import { ENDPOINTS } from "../../api/apiEndPoints";
+
 const FormEditUser = () => {
   const [dni, setDni] = useState("");
   const [nombres, setNombres] = useState("");
@@ -36,7 +38,7 @@ const FormEditUser = () => {
   useEffect(() => {
     const obtenerPorId = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/usuario/${id}`);
+        const response = await axios.get(ENDPOINTS.USUARIO.OBTENER_POR_ID(id));
         setDni(response.data.DNI_USUARIO);
         setNombres(response.data.NOMBRE_USUARIO);
         setApellidos(response.data.APELLIDO_USUARIO);
@@ -57,7 +59,7 @@ const FormEditUser = () => {
 
     const cargarRoles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/rol");
+        const response = await axios.get(ENDPOINTS.ROL.OBTENER_TODOS);
         setRoles(response.data);
       } catch (error) {
         console.error("Error al cargar los roles", error);
@@ -83,7 +85,7 @@ const FormEditUser = () => {
   const actualizar = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`http://localhost:5000/usuario/${id}`, {
+      await axios.patch(ENDPOINTS.USUARIO.ACTUALIZAR(id), {
         DNI_USUARIO: dni,
         NOMBRE_USUARIO: nombres,
         APELLIDO_USUARIO: apellidos,
