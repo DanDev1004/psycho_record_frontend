@@ -60,6 +60,7 @@ const Sidebar = ({ isActive }) => {
           </li>
 
           {/*DASHBOARD*/}
+          {user && (user.ID_ROL === 1 || user.ID_ROL === 2) && (
           <li ref={(el) => setRef("dashboard", el)} onMouseOver={() => handleMouseOver("dashboard")}>
             <NavLink to={"/dashboard"} onClick={()=>dispatch(setTitle('Historial Psicólogico'))}>
               <span className="icon">
@@ -68,6 +69,7 @@ const Sidebar = ({ isActive }) => {
               <span className="title">Dashboard</span>
             </NavLink>
           </li>
+          )}
 
           {/*USUARIOS*/}
           {user && user.ID_ROL === 1 && (

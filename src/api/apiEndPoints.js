@@ -1,7 +1,7 @@
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const ENDPOINTS = {
-    // Autenticación
+    //AUTENTICACION
     AUTH: {
         LOGIN: `${BASE_URL}/login`,
         LOGOUT: `${BASE_URL}/logout`,

@@ -51,6 +51,8 @@ body {
   width: 100%;
 }
 
+
+
 .navegacion ul li {
   position: relative;
   width: 100%;
@@ -351,15 +353,15 @@ body {
 }
   */
 
-  .btn-blue {
-    position: relative;
-    padding: 8px 10px;
-    background: #02828b;
-    text-decoration: none;
-    color: var(--white);
-    border-radius: 6px;
-    margin-right: 1px;
-  }
+.btn-blue {
+  position: relative;
+  padding: 8px 10px;
+  background: #02828b;
+  text-decoration: none;
+  color: var(--white);
+  border-radius: 6px;
+  margin-right: 1px;
+}
 
 
 .btn-details {
@@ -474,7 +476,7 @@ body {
 }
 
 
-.reporte-pdf{
+.reporte-pdf {
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -486,7 +488,7 @@ body {
   padding: 14px
 }
 
-.input-mes-pdf{
+.input-mes-pdf {
   margin-left: 10px;
   height: 40px;
 }

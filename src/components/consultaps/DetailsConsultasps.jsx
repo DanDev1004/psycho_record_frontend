@@ -3,9 +3,7 @@ import axios from "axios";
 import { useParams, NavLink, Link } from "react-router-dom";
 import "../../assets/styles/Form.css";
 import { IonIcon } from '@ionic/react';
-import {
-    trashOutline
-} from "ionicons/icons";
+import { trashOutline } from "ionicons/icons";
 import { ENDPOINTS } from "../../api/apiEndPoints";
 import { formatearFecha } from "../../utils/utils";
 
@@ -13,6 +11,9 @@ const DetailsConsultaPs = () => {
     const { id } = useParams();
     const [consulta, setConsulta] = useState(null);
     const [diagnosticos, setDiagnosticos] = useState([]);
+    const [nombreFamiliar, setNombreFamiliar] = useState("");
+    const [telefonoFamiliar, setTelefonoFamiliar] = useState("");
+    const [parentescoFamiliar, setParentescoFamiliar] = useState("");
 
     useEffect(() => {
         obtenerConsulta();
@@ -23,6 +24,13 @@ const DetailsConsultaPs = () => {
         try {
             const response = await axios.get(ENDPOINTS.CONSULTAPS.OBTENER_POR_ID(id));
             setConsulta(response.data);
+
+            if (response.data.TIPO_DERIVACION === 2 && response.data.FAMILIAR) {
+                const [nombre, telefono, parentesco] = response.data.FAMILIAR.split('|');
+                setNombreFamiliar(nombre);
+                setTelefonoFamiliar(telefono);
+                setParentescoFamiliar(parentesco);
+            }
         } catch (error) {
             console.error("Error al obtener la consulta", error);
         }
@@ -42,7 +50,7 @@ const DetailsConsultaPs = () => {
         if (confirmacion) {
             try {
                 await axios.delete(ENDPOINTS.DIAGNOSTICO.ELIMINAR(diagnosticoId));
-                obtenerDiagnosticos()
+                obtenerDiagnosticos();
             } catch (error) {
                 console.error("Error al eliminar el diagnóstico", error);
             }
@@ -55,14 +63,14 @@ const DetailsConsultaPs = () => {
 
     return (
         <>
-            <div className="detailsConsultasps">
+            <div className="detailsConsultasps" >
                 <NavLink to={"/consultasps"}>
                     <button className="btn-regresar">Regresar</button>
                 </NavLink>
                 <h1 className="title-form">Detalles de la Consulta Psicológica</h1>
                 <div className="contenedor">
 
-                    <div className="row">
+                    <div className="row" style={{ textTransform: 'capitalize' }}>
                         <div className="col-25">
                             <strong>Usuario:</strong>
                         </div>
@@ -84,8 +92,7 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
-
-                    <div className="row">
+                    <div className="row" style={{ textTransform: 'capitalize' }}>
                         <div className="col-25">
                             <strong>Alumno:</strong>
                         </div>
@@ -94,16 +101,35 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
+                    {consulta.TIPO_DERIVACION === 2 && (
+                        <>
+                            <div className="row">
+                                <div className="col-25">
+                                    <strong>Familiar:</strong>
+                                </div>
+                                <div className="col-75">
+                                    {nombreFamiliar}
+                                </div>
+                            </div>
 
-                    {consulta.TIPO_DERIVACION === 2 && consulta.FAMILIAR && (
-                        <div className="row">
-                            <div className="col-25">
-                                <strong>Derivado por:</strong>
+                            <div className="row">
+                                <div className="col-25">
+                                    <strong>Tel. Familiar:</strong>
+                                </div>
+                                <div className="col-75">
+                                    {telefonoFamiliar}
+                                </div>
                             </div>
-                            <div className="col-75">
-                                {consulta.FAMILIAR}
+
+                            <div className="row">
+                                <div className="col-25">
+                                    <strong>Parentesco:</strong>
+                                </div>
+                                <div className="col-75">
+                                    {parentescoFamiliar}
+                                </div>
                             </div>
-                        </div>
+                        </>
                     )}
 
                     {consulta.TIPO_DERIVACION === 3 && consulta.DERIVACION && consulta.DERIVACION.USUARIO && (
@@ -157,7 +183,7 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
-                    <div className="row" >
+                    <div className="row">
                         <div className="col-25">
                             <strong>Motivo:</strong>
                         </div>
@@ -211,7 +237,7 @@ const DetailsConsultaPs = () => {
                     )}
 
                     {consulta.CONDUCTA && (
-                        <div className="row" >
+                        <div className="row">
                             <div className="col-25">
                                 <strong>Conducta:</strong>
                             </div>
@@ -220,7 +246,6 @@ const DetailsConsultaPs = () => {
                             </div>
                         </div>
                     )}
-
                 </div>
             </div>
 
@@ -249,7 +274,6 @@ const DetailsConsultaPs = () => {
                                     <td>{diagnostico.CONDICION?.NOMBRE_CONDICION || 'No especificada'}</td>
                                     <td>{diagnostico.DESCRIPCION || 'Sin descripción'}</td>
                                     <td>
-
                                         <Link className="btn-delete" onClick={() => eliminarDiagnostico(diagnostico.ID_DIAGNOSTICO)}>
                                             <IonIcon icon={trashOutline} />
                                         </Link>

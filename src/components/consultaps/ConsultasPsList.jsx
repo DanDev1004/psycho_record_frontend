@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { IonIcon } from "@ionic/react";
-import { searchOutline } from "ionicons/icons";
 import { useTable, usePagination } from 'react-table';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+
+import { IonIcon } from "@ionic/react";
 import {
+    searchOutline,
     trashOutline,
     createOutline,
     newspaperOutline
@@ -79,10 +80,10 @@ const ConsultasPsList = () => {
                 return;
             }
 
-            // documento PDF en modo horizontal
+            //documento PDF en modo horizontal
             const doc = new jsPDF('landscape');
 
-            // nombre del mes en español
+            //nombre del mes en español
 
 
             doc.text(`REGISTRO DE ATENCIÓN DEL SERVICIO DE PSICOLOGÍA EN EL MES DE ${mesTexto.toUpperCase()} - ${anio}`, 10, 10);
@@ -98,7 +99,7 @@ const ConsultasPsList = () => {
                 "FECHA Y HORARIO"
             ];
 
-            // Generando las filas de la tabla
+            //Generando las filas de la tabla
             const tableRows = consultasFiltradas.map((consulta, index) => {
                 const alumno = consulta.ALUMNO;
                 const edad = calcularEdad(alumno.FECH_NAC);
@@ -119,7 +120,7 @@ const ConsultasPsList = () => {
             });
 
 
-            // Agregando la tabla al PDF
+            //Agregando la tabla al PDF
             doc.autoTable({
                 head: [tableColumn],
                 body: tableRows,

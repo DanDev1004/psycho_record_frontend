@@ -8,6 +8,7 @@ const FormEditConsultasPs = () => {
     const [consulta, setConsulta] = useState(null);
     const [alumno, setAlumno] = useState("");
     const [tutor, setTutor] = useState("");
+    const [familiar, setFamiliar] = useState("");
     const [fechaAtencion, setFechaAtencion] = useState("");
     const [horaInicio, setHoraInicio] = useState("");
     const [horaFin, setHoraFin] = useState("");
@@ -39,6 +40,7 @@ const FormEditConsultasPs = () => {
                 setAspectoFisico(consultaData.ASPECTO_FISICO);
                 setAseoPersonal(consultaData.ASEO_PERSONAL);
                 setConducta(consultaData.CONDUCTA);
+                setFamiliar(consultaData.FAMILIAR);
 
                 if (consultaData.TIPO_DERIVACION === 1 || consultaData.TIPO_DERIVACION === 2) {
                     setAlumno(`${consultaData.ALUMNO.NOMBRES} ${consultaData.ALUMNO.APELLIDOS}`);
@@ -105,6 +107,23 @@ const FormEditConsultasPs = () => {
                             />
                         </div>
                     </div>
+
+                    {consulta?.TIPO_DERIVACION === 2 && (
+                        <div className="row">
+                        <div className="col-25">
+                            <label className="label-form">Familiar: </label>
+                        </div>
+                        <div className="col-75">
+                            <input
+                                type="text"
+                                className="input-form"
+                                value={familiar.split('|')[0]}
+                                readOnly
+                                style={{ border: "none", pointerEvents: "none" }}
+                            />
+                        </div>
+                    </div>
+                    )}
 
                     {consulta?.TIPO_DERIVACION === 3 && (
                         <div className="row">

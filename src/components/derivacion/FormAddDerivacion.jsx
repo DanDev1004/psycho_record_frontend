@@ -145,6 +145,7 @@ const FormAddDerivacion = () => {
                                     onChange={setUsuario}
                                     className="input-form input-tutor"
                                     readOnly 
+                                    style={{ border: "none", pointerEvents: "none", textTransform:'capitalize' }}
                                 />
                             ) : (
                                 <Select
