@@ -10,7 +10,7 @@ import {
 } from "ionicons/icons";
 import { ENDPOINTS } from "../api/apiEndPoints";
 import "../assets/styles/dashboard.css";
-import { formatearFecha } from "../utils/utils";
+import { formatearFecha, formatTime_Hora_Minuto } from "../utils/utils";
 
 const Welcome = () => {
   const { user } = useSelector((state) => state.auth);
@@ -100,8 +100,7 @@ const Welcome = () => {
             <thead>
               <tr>
                 <td>Atención</td>
-                <td>Inicio</td>
-                <td>Fin</td>
+                <td>Alumno</td>
                 <td>Actualizar</td>
               </tr>
             </thead>
@@ -110,9 +109,14 @@ const Welcome = () => {
               {consultasPendientes.length > 0 ? (
                 consultasPendientes.map((consulta, index) => (
                   <tr key={index}>
-                    <td>{formatearFecha(consulta.FECHA_ATENCION)}</td>
-                    <td>{consulta.HORA_INICIO}</td>
-                    <td>{consulta.HORA_FIN}</td>
+                    <td>
+                      {formatearFecha(consulta.FECHA_ATENCION)}
+                      <br/>
+                      <span style={{fontSize:'0.8rem'}}>Desde: {formatTime_Hora_Minuto(consulta.HORA_INICIO)}</span>
+                      <br/>
+                      <span style={{fontSize:'0.8rem'}}>Hasta: {formatTime_Hora_Minuto(consulta.HORA_FIN)}</span>
+                    </td>
+                    <td>{consulta.ALUMNO.APELLIDOS} {consulta.ALUMNO.NOMBRES}</td>
                     <td>
                       <Link to={`/Consultasps/edit/${consulta.ID_CONSULTA_PS}`} className="btn-edit" title="Actualizar">
                         <IonIcon icon={createOutline} />

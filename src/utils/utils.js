@@ -40,3 +40,7 @@ export  const obtenerFechaActual = () => {
     const day = String(hoy.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+
+export function formatTime_Hora_Minuto(horaCompleta) {
+    return horaCompleta.split(":").slice(0, 2).join(":");
+  }

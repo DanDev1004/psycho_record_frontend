@@ -93,6 +93,14 @@ const DerivacionList = () => {
                     Header: 'ACCIONES',
                     Cell: ({ row }) => (
                         <>
+
+                            <Link
+                                className="btn-details"
+                                to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
+                            >
+                                <IonIcon icon={newspaperOutline} />
+                            </Link>
+                            
                             {!row.original.RECIBIDO && (
                                 <Link
                                     className="btn-edit"
@@ -113,14 +121,6 @@ const DerivacionList = () => {
                                     <IonIcon icon={createOutline} />
                                 </Link>
                             )}
-
-                            <Link
-                                className="btn-details"
-                                to={`/derivacion/detail/${row.original.ID_DERIVACION}`}
-                            >
-                                <IonIcon icon={newspaperOutline} />
-                            </Link>
-
 
                             <Link
                                 className="btn-delete"

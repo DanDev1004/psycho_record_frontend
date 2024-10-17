@@ -231,6 +231,7 @@ const FormAddConsultasPs = () => {
                                         className="input-form"
                                         placeholder="Seleccionar área"
                                         isClearable
+                                        isDisabled={!!idAlumno}
                                     />
                                 </div>
                             </div>
@@ -247,6 +248,7 @@ const FormAddConsultasPs = () => {
                                         className="input-form"
                                         placeholder="Seleccionar ciclo"
                                         isClearable
+                                        isDisabled={!!idAlumno}
                                     />
                                 </div>
                             </div>
