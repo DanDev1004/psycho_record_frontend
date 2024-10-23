@@ -141,7 +141,7 @@ const FormEditUser = () => {
                 type="text"
                 value={nombres || ""}
                 onChange={handleNombresChange}
-                style={{ textTransform: 'capitalize' }}
+                style={{ textTransform: 'uppercase' }}
                 placeholder="Nombres"
               />
             </div>
@@ -157,7 +157,7 @@ const FormEditUser = () => {
                 type="text"
                 value={apellidos || ""}
                 onChange={(e) => setApellidos(e.target.value)}
-                style={{ textTransform: 'capitalize' }}
+                style={{ textTransform: 'uppercase' }}
                 placeholder="Apellidos"
               />
             </div>

@@ -68,7 +68,7 @@ const AlumnoList = () => {
         {
             Header: 'APELLIDOS Y NOMBRES',
             Cell: ({ row }) =>
-                <div style={{ textTransform: 'capitalize' }}>
+                <div style={{ textTransform: 'uppercase' }}>
                     {`${row.original.APELLIDOS} ${row.original.NOMBRES} `}
                 </div>
         },

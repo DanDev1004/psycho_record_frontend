@@ -43,7 +43,7 @@ const DetailsDerivacion = () => {
                     <div className="col-25">
                         <strong>Remitente:</strong>
                     </div>
-                    <div className="col-75">
+                    <div className="col-75" style={{textTransform:'uppercase'}}>
                         {derivacion.USUARIO?.NOMBRE_USUARIO} {derivacion.USUARIO?.APELLIDO_USUARIO}
                     </div>
                 </div>
@@ -51,7 +51,7 @@ const DetailsDerivacion = () => {
                     <div className="col-25">
                         <strong>Alumno:</strong>
                     </div>
-                    <div className="col-75">
+                    <div className="col-75" style={{textTransform:'uppercase'}}>
                         {derivacion.ALUMNO?.NOMBRES} {derivacion.ALUMNO?.APELLIDOS} (DNI: {derivacion.ALUMNO?.DNI})
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const DetailsDerivacion = () => {
                     <div className="col-25">
                         <strong>Urgencia:</strong>
                     </div>
-                    <div className="col-75">
+                    <div className="col-75" style={{textTransform:'uppercase'}}>
                         {derivacion.URGENCIA === 1
                             ? "Baja"
                             : derivacion.URGENCIA === 2
@@ -79,7 +79,7 @@ const DetailsDerivacion = () => {
                     <div className="col-25">
                         <strong>Estado:</strong>
                     </div>
-                    <div className="col-75">
+                    <div className="col-75" style={{textTransform:'uppercase'}}>
                         {derivacion.RECIBIDO ? "Recibido" : "En espera"}
                     </div>
                 </div>

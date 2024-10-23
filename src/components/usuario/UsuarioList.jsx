@@ -59,6 +59,14 @@ const UsuarioList = () => {
     }
   };
 
+  const obtenerGeneroTexto = (genero) => {
+    switch(genero) {
+      case 1: return "Masculino";
+      case 2: return "Femenino";
+      default: return "No especificado";
+    }
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -72,8 +80,8 @@ const UsuarioList = () => {
       {
         Header: 'NOMBRES Y APELLIDOS',
         Cell: ({ row }) => 
-          <div style={{textTransform:'capitalize'}}>
-            {`${row.original.NOMBRE_USUARIO} ${row.original.APELLIDO_USUARIO}`}
+          <div style={{textTransform:'uppercase'}}>
+            {`${row.original.APELLIDO_USUARIO} ${row.original.NOMBRE_USUARIO} `}
           </div>
       },
       {
@@ -84,10 +92,14 @@ const UsuarioList = () => {
         Header: 'USERNAME',
         accessor: 'USERNAME',
       },
-      
       {
-        Header: 'TELEFONO',
+        Header: 'TELÉFONO',
         accessor: 'TELEFONO',
+      },
+      {
+        Header: 'GÉNERO',
+        accessor: 'GENERO',
+        Cell: ({ value }) => obtenerGeneroTexto(value), 
       },
       {
         Header: 'ROL',
@@ -98,10 +110,10 @@ const UsuarioList = () => {
         Cell: ({ row }) => (
           <>
             <Link className="btn-edit" to={`/usuario/edit/${row.original.ID_USUARIO}`}>
-            <IonIcon icon={createOutline} />
+              <IonIcon icon={createOutline} />
             </Link>
             <Link className="btn-delete" onClick={() => eliminar(row.original.ID_USUARIO)}>
-            <IonIcon icon={trashOutline} />
+              <IonIcon icon={trashOutline} />
             </Link>
           </>
         ),
@@ -157,41 +169,31 @@ const UsuarioList = () => {
       </div>
 
       <table {...getTableProps()}>
-    <thead>
-        {headerGroups.map(headerGroup => {
-            const { key: headerGroupKey, ...headerGroupRest } = headerGroup.getHeaderGroupProps();
-            return (
-                <tr key={headerGroupKey} {...headerGroupRest}>
-                    {headerGroup.headers.map(column => {
-                        const { key: columnKey, ...columnRest } = column.getHeaderProps();
-                        return (
-                            <th key={columnKey} {...columnRest}>
-                                {column.render('Header')}
-                            </th>
-                        );
-                    })}
-                </tr>
-            );
-        })}
-    </thead>
-    <tbody {...getTableBodyProps()}>
-        {page.map(row => {
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map(row => {
             prepareRow(row);
-            const { key: rowKey, ...rowRest } = row.getRowProps();
             return (
-                <tr key={rowKey} {...rowRest}>
-                    {row.cells.map(cell => {
-                        const { key: cellKey, ...cellRest } = cell.getCellProps();
-                        return (
-                            <td key={cellKey} {...cellRest}>
-                                {cell.render('Cell')}
-                            </td>
-                        );
-                    })}
-                </tr>
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>
+                    {cell.render('Cell')}
+                  </td>
+                ))}
+              </tr>
             );
-        })}
-    </tbody>
+          })}
+        </tbody>
       </table>
 
       <div className="pagination">

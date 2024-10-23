@@ -153,7 +153,7 @@ const FormAddAlumno = () => {
                                 type="text"
                                 value={nombres}
                                 onChange={(e) => setNombres(e.target.value)}
-                                style={{ textTransform: 'capitalize' }}
+                                style={{ textTransform: 'uppercase' }}
                                 placeholder="Nombres"
                                 required
                             />
@@ -170,7 +170,7 @@ const FormAddAlumno = () => {
                                 type="text"
                                 value={apellidos}
                                 onChange={(e) => setApellidos(e.target.value)}
-                                style={{ textTransform: 'capitalize' }}
+                                style={{ textTransform: 'uppercase' }}
                                 placeholder="Apellidos"
                                 required
                             />

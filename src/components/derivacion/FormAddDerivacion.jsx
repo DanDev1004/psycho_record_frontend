@@ -137,7 +137,7 @@ const FormAddDerivacion = () => {
                         <div className="col-25">
                             <label className="label-form">Usuario</label>
                         </div>
-                        <div className="col-75">
+                        <div className="col-75" style={{textTransform:'uppercase'}}>
                             {user?.ID_ROL === 3 ? (
                                 <input
                                     type="text"
@@ -200,7 +200,7 @@ const FormAddDerivacion = () => {
                         </div>
                     ) : null}
 
-                    <div className="row">
+                    <div className="row" style={{textTransform:'uppercase'}}>
                         <div className="col-25">
                             <label className="label-form">Alumno</label>
                         </div>

@@ -74,7 +74,7 @@ const DetailsConsultaPs = () => {
                         <div className="col-25">
                             <strong>Usuario:</strong>
                         </div>
-                        <div className="col-75">
+                        <div className="col-75" style={{textTransform:'uppercase'}}>
                             {consulta.USUARIO?.NOMBRE_USUARIO} {consulta.USUARIO?.APELLIDO_USUARIO}
                         </div>
                     </div>
@@ -92,7 +92,7 @@ const DetailsConsultaPs = () => {
                         </div>
                     </div>
 
-                    <div className="row" style={{ textTransform: 'capitalize' }}>
+                    <div className="row" style={{ textTransform: 'uppercase' }}>
                         <div className="col-25">
                             <strong>Alumno:</strong>
                         </div>

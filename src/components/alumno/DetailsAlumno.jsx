@@ -41,7 +41,7 @@ const DetailsAlumno = () => {
                     <div className="col-25">
                         <strong>Nombres:</strong>
                     </div>
-                    <div className="col-75" style={{ textTransform: 'capitalize' }}>
+                    <div className="col-75" style={{ textTransform: 'uppercase' }}>
                         {alumno.NOMBRES}
                     </div>
                 </div>
@@ -50,7 +50,7 @@ const DetailsAlumno = () => {
                     <div className="col-25">
                         <strong>Apellidos:</strong>
                     </div>
-                    <div className="col-75" style={{ textTransform: 'capitalize' }}>
+                    <div className="col-75" style={{ textTransform: 'uppercase' }}>
                         {alumno.APELLIDOS}
                     </div>
                 </div>
