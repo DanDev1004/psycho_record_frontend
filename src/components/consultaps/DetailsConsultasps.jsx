@@ -74,7 +74,7 @@ const DetailsConsultaPs = () => {
                         <div className="col-25">
                             <strong>Usuario:</strong>
                         </div>
-                        <div className="col-75" style={{textTransform:'uppercase'}}>
+                        <div className="col-75" style={{ textTransform: 'uppercase' }}>
                             {consulta.USUARIO?.NOMBRE_USUARIO} {consulta.USUARIO?.APELLIDO_USUARIO}
                         </div>
                     </div>
@@ -250,7 +250,7 @@ const DetailsConsultaPs = () => {
             </div>
 
             {consulta.ASISTENCIA === 2 && (
-                <div className="recentTable">
+                <div className="tabla">
                     <div className="TableHeader">
                         <h2>Diagnósticos Relacionados</h2>
                         <Link to={`/diagnostico/add/${id}`} className="btn">
@@ -262,6 +262,7 @@ const DetailsConsultaPs = () => {
                         <thead>
                             <tr>
                                 <th>N°</th>
+                                <th>Categoria</th>
                                 <th>Condición</th>
                                 <th>Descripción</th>
                                 <th>Acciones</th>
@@ -271,8 +272,24 @@ const DetailsConsultaPs = () => {
                             {diagnosticos.map((diagnostico, index) => (
                                 <tr key={diagnostico.ID_DIAGNOSTICO}>
                                     <td>{diagnosticos.length - index}</td>
+                                    <td>{diagnostico.CONDICION?.CAT_COND.NOMBRE_CAT_COND || 'No especificada'}</td>
                                     <td>{diagnostico.CONDICION?.NOMBRE_CONDICION || 'No especificada'}</td>
-                                    <td>{diagnostico.DESCRIPCION || 'Sin descripción'}</td>
+                                    <td>
+                                        <textarea
+                                            readOnly
+                                            value={diagnostico.DESCRIPCION || 'Sin descripción'}
+                                            style={{
+                                                width: '300px',
+                                                height: '80px',
+                                                resize: 'none',
+                                                overflow: 'auto',
+                                                border: '1px solid #ccc',
+                                                padding: '5px',
+                                                fontSize: '14px',
+                                                scrollbarWidth: 'none'
+                                            }}
+                                        />
+                                    </td>
                                     <td>
                                         <Link className="btn-delete" onClick={() => eliminarDiagnostico(diagnostico.ID_DIAGNOSTICO)}>
                                             <IonIcon icon={trashOutline} />

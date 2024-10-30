@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Topbar from "../partials/Topbar";
-import Sidebar from "../partials/Sidebar";
+import Topbar from "../layouts/Topbar";
+import Sidebar from "../layouts/Sidebar";
 
 const Layout = ({ children }) => {
   const [isActive, setIsActive] = useState(false);

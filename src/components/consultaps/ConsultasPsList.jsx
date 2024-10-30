@@ -136,6 +136,7 @@ const ConsultasPsList = () => {
 
 
 
+
     const columns = useMemo(
         () => [
             {
@@ -225,7 +226,7 @@ const ConsultasPsList = () => {
 
     return (
         <>
-            <div className="recentTable">
+            <div className="tabla">
                 <div className="TableHeader">
                     <h2>Consultas Psicológicas</h2>
 

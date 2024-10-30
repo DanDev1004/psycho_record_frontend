@@ -12,6 +12,8 @@ textarea {
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
+  font-size: 1rem;
+  text-transform: uppercase;
 }
 
 .label-form {
@@ -135,6 +137,12 @@ button {
   line-height: 32px;
 }
 
+.descripcionDiagnostico {
+  max-width: 200px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+}
+
 
 @media screen and (max-width: 991px) {
 
@@ -189,6 +197,10 @@ button {
 
   .button-form {
     margin-top: 10px;
+  }
+
+  .asistencia-group{
+    margin-left: -25px;
   }
 
   .btn-regresar {

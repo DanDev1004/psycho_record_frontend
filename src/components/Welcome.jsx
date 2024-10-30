@@ -70,7 +70,7 @@ const Welcome = () => {
       <div className="bienvenida">
         <h2>
         Bienvenido, <strong style={{ textTransform: 'capitalize' }}>
-            {user && user.NOMBRE_USUARIO} {user && user.APELLIDO_USUARIO}
+            {user && user.NOMBRE_USUARIO.split(' ')[0]} {user && user.APELLIDO_USUARIO.split(' ')[0]}
           </strong>
         </h2>
       </div>

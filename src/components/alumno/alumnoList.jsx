@@ -14,7 +14,7 @@ import {
     createOutline,
     newspaperOutline,
     heartCircleOutline,
-    radioOutline
+    radioOutline,
 } from "ionicons/icons";
 
 const AlumnoList = () => {
@@ -163,7 +163,7 @@ const AlumnoList = () => {
     );
 
     return (
-        <div className="recentTable">
+        <div className="tabla">
             <div className="TableHeader">
                 <h2>ALUMNOS</h2>
 

@@ -16,6 +16,7 @@ export const ENDPOINTS = {
         ACTUALIZAR: (id) => `${BASE_URL}/usuario/${id}`,
         ELIMINAR: (id) => `${BASE_URL}/usuario/${id}`,
         BUSCAR: `${BASE_URL}/usuario/buscar`,
+        ACTIVAR: (id) => `${BASE_URL}/usuario/activar/${id}`,  
     },
     ALUMNO: {
         OBTENER_POR_ID: (id) => `${BASE_URL}/alumno/${id}`,

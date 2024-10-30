@@ -172,7 +172,7 @@ const DerivacionList = () => {
     );
 
     return (
-        <div className="recentTable">
+        <div className="tabla">
             <div className="TableHeader">
                 <h2>Derivaciones</h2>
 

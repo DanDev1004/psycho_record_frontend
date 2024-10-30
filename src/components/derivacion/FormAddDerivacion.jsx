@@ -45,7 +45,7 @@ const FormAddDerivacion = () => {
                 const response = await axios.get(ENDPOINTS.ALUMNO.OBTENER_TODOS);
                 const alumnoOptions = response.data.map((alumno) => ({
                     value: alumno.ID_ALUMNO,
-                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE.NOMBRE_AREA_PE} - ${alumno.CICLO}`,
+                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno.AREA_PE.NOMBRE_AREA_PE} - ${convertirRomanos(alumno.CICLO)}`,
                     idAreaPe: alumno.AREA_PE.ID_AREA_PE,
                     ciclo: alumno.CICLO,
                 }));
@@ -145,7 +145,7 @@ const FormAddDerivacion = () => {
                                     onChange={setUsuario}
                                     className="input-form input-tutor"
                                     readOnly 
-                                    style={{ border: "none", pointerEvents: "none", textTransform:'capitalize' }}
+                                    style={{ border: "none", pointerEvents: "none", textTransform:'uppercase', fontSize:'1rem' }}
                                 />
                             ) : (
                                 <Select
@@ -202,9 +202,14 @@ const FormAddDerivacion = () => {
 
                     <div className="row" style={{textTransform:'uppercase'}}>
                         <div className="col-25">
-                            <label className="label-form">Alumno</label>
+                            <label className="label-form">Alumno:</label>
                         </div>
                         <div className="col-75">
+                        {idAlumno ? (
+                                        <>
+                                        <p className="input-form" style={{textTransform:'uppercase', border:'none'}}>{alumno?.label?.split(' - ')[0]  } - {alumno?.label?.split(' - ')[1]} - {alumno?.label?.split(' - ')[2] }</p>
+                                        </>
+                                    ) : (
                             <Select
                                 value={alumno}
                                 onChange={setAlumno}
@@ -215,6 +220,7 @@ const FormAddDerivacion = () => {
                                 isDisabled={!!idAlumno}
                                 required
                             />
+                                    )}
                         </div>
                     </div>
 
