@@ -14,7 +14,7 @@ import {
     createOutline,
     newspaperOutline,
     heartCircleOutline,
-    radioOutline
+    radioOutline,
 } from "ionicons/icons";
 
 const AlumnoList = () => {
@@ -68,7 +68,7 @@ const AlumnoList = () => {
         {
             Header: 'APELLIDOS Y NOMBRES',
             Cell: ({ row }) =>
-                <div style={{ textTransform: 'capitalize' }}>
+                <div style={{ textTransform: 'uppercase' }}>
                     {`${row.original.APELLIDOS} ${row.original.NOMBRES} `}
                 </div>
         },
@@ -163,7 +163,7 @@ const AlumnoList = () => {
     );
 
     return (
-        <div className="recentTable">
+        <div className="tabla">
             <div className="TableHeader">
                 <h2>ALUMNOS</h2>
 

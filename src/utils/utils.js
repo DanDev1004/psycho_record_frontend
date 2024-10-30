@@ -1,8 +1,8 @@
 export const formatearFecha = (dateString) => {
     const date = new Date(dateString);
-    const year = date.getUTCFullYear(); 
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getUTCDate()).padStart(2, '0'); 
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
     return `${day}-${month}-${year}`;
 };
 
@@ -33,14 +33,14 @@ export const calcularEdad = (fechaNacimiento) => {
 };
 
 
-export  const obtenerFechaActual = () => {
+export const obtenerFechaActual = () => {
     const hoy = new Date();
     const year = hoy.getFullYear();
-    const month = String(hoy.getMonth() + 1).padStart(2, '0'); 
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
     const day = String(hoy.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
 
 export function formatTime_Hora_Minuto(horaCompleta) {
     return horaCompleta.split(":").slice(0, 2).join(":");
-  }
+}

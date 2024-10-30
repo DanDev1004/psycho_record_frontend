@@ -12,6 +12,8 @@ textarea {
   border-radius: 4px;
   box-sizing: border-box;
   resize: vertical;
+  font-size: 1rem;
+  text-transform: uppercase;
 }
 
 .label-form {
@@ -20,7 +22,24 @@ textarea {
 }
 
 
+.password-wrapper {
+  position: relative;
+}
 
+
+.btn-show-password {
+  position: absolute;
+  right: 10px;
+  top: 50%; 
+  transform: translateY(-50%);
+  background-color: #ffffff;
+  color: black;
+  padding: 1px 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 23px; 
+  border: none;
+}
 button {
   background-color: #0358CB;
   color: white;
@@ -118,6 +137,12 @@ button {
   line-height: 32px;
 }
 
+.descripcionDiagnostico {
+  max-width: 200px; 
+  white-space: nowrap; 
+  overflow: hidden; 
+}
+
 
 @media screen and (max-width: 991px) {
 
@@ -140,6 +165,13 @@ button {
   }
   .asistencia-group{
     margin-left: -75px;
+  }
+
+  .btn-show-password {
+    position: absolute;
+    left: 625px; 
+    top: 55%; 
+    transform: translateY(-50%);
   }
 
 }
@@ -167,6 +199,10 @@ button {
     margin-top: 10px;
   }
 
+  .asistencia-group{
+    margin-left: -25px;
+  }
+
   .btn-regresar {
     width: 50%;
     float: left;
@@ -180,5 +216,12 @@ button {
     width: 30px;
   }
 
+  .btn-show-password {
+    position: absolute;
+    width: auto;
+    left: 230px; 
+    top: 55%; 
+    transform: translateY(-50%);
+  }
 
 }

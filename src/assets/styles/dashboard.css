@@ -18,7 +18,7 @@
 .cardBox .card {
     position: relative;
     background: var(--white);
-    padding: 30px;
+    padding: 15px;
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
@@ -104,6 +104,7 @@
 
 .detailsDeriv .tablaConsulta{
     min-height: 400px;
+    
 }
 
 
@@ -124,6 +125,10 @@
     background: var(--blue);
     color: var(--white);
 }
+
+.details .recentOrders table tr td {
+    padding: 10px;
+  }
 
 .detailsDeriv .consultasPendientes table tr td {
     padding: 10px;
@@ -288,16 +293,28 @@
     .cardBox {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .consultasPendientes {
+        overflow-x: auto;
+    }
+
+    .consultasPendientes table {
+        min-width: 900px; 
+    }
+
+    
 }
 
 @media (max-width: 768px) {
     .detailsDeriv {
-        grid-template-columns: 1fr;
+        grid-template-columns: 2fr;
     }
 
     .consultasPendientes {
         overflow-x: auto;
     }
+    
+    
 
     .status.inProgress {
         white-space: nowrap;
@@ -307,6 +324,14 @@
 @media (max-width: 480px) {
     .cardBox {
         grid-template-columns: repeat(1, 1fr);
+    }
+
+    .consultasPendientes {
+        overflow-x: auto;
+    }
+
+    .consultasPendientes table {
+        min-width: 900px; 
     }
 
     .cardHeader h2 {

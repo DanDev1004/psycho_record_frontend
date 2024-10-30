@@ -26,6 +26,13 @@ const Welcome = () => {
     try {
       const response = await axios.get(ENDPOINTS.CONSULTAPS.OBTENER_TODOS);
       const pendientes = response.data.filter(consulta => consulta.ASISTENCIA === 1);
+
+      const consultasPendientesOrdenadas = pendientes.sort((a, b) => {
+        return new Date(a.FECHA_ATENCION) - new Date(b.FECHA_ATENCION);
+    });
+
+    setConsultasPendientes(consultasPendientesOrdenadas);
+
       setConsultasPendientes(pendientes.reverse());
     } catch (error) {
       console.error("Error al obtener las consultas", error);
@@ -36,7 +43,10 @@ const Welcome = () => {
     try {
       const response = await axios.get(ENDPOINTS.DERIVACION.OBTENER_TODOS);
       const derivacionesNoRecibidas = response.data.filter(derivacion => derivacion.RECIBIDO === false);
-      setDerivacionesPendientes(derivacionesNoRecibidas.reverse());
+
+      const derivacionesOrdenadas = derivacionesNoRecibidas.sort((a, b) => b.URGENCIA - a.URGENCIA);
+        
+      setDerivacionesPendientes(derivacionesOrdenadas);
     } catch (error) {
       console.error("Error al obtener las derivaciones", error);
     }
@@ -58,10 +68,9 @@ const Welcome = () => {
   return (
     <>
       <div className="bienvenida">
-        <h1>Bienvenido</h1>
         <h2>
-          <strong style={{ textTransform: 'capitalize' }}>
-            {user && user.NOMBRE_USUARIO} {user && user.APELLIDO_USUARIO}
+        Bienvenido, <strong style={{ textTransform: 'capitalize' }}>
+            {user && user.NOMBRE_USUARIO.split(' ')[0]} {user && user.APELLIDO_USUARIO.split(' ')[0]}
           </strong>
         </h2>
       </div>
@@ -100,8 +109,10 @@ const Welcome = () => {
             <thead>
               <tr>
                 <td>Atención</td>
-                <td>Alumno</td>
-                <td>Actualizar</td>
+                <td>Inicio</td>
+                <td>Fin</td>
+                <td style={{textAlign:'start'}}>Alumno</td>
+                <td style={{textAlign:'end'}}>Actualizar</td>
               </tr>
             </thead>
 
@@ -111,13 +122,19 @@ const Welcome = () => {
                   <tr key={index}>
                     <td>
                       {formatearFecha(consulta.FECHA_ATENCION)}
+                      {/*
                       <br/>
                       <span style={{fontSize:'0.8rem'}}>Desde: {formatTime_Hora_Minuto(consulta.HORA_INICIO)}</span>
                       <br/>
                       <span style={{fontSize:'0.8rem'}}>Hasta: {formatTime_Hora_Minuto(consulta.HORA_FIN)}</span>
+                      */}
                     </td>
-                    <td>{consulta.ALUMNO.APELLIDOS} {consulta.ALUMNO.NOMBRES}</td>
-                    <td>
+                    <td>{formatTime_Hora_Minuto(consulta.HORA_INICIO)}</td>
+                    <td>{formatTime_Hora_Minuto(consulta.HORA_FIN)}</td>
+
+                    <td style={{textTransform:'uppercase', textAlign:'start'}}>{consulta.ALUMNO.APELLIDOS} {consulta.ALUMNO.NOMBRES}</td>
+
+                    <td style={{textAlign:'end'}}>
                       <Link to={`/Consultasps/edit/${consulta.ID_CONSULTA_PS}`} className="btn-edit" title="Actualizar">
                         <IonIcon icon={createOutline} />
                       </Link>
@@ -144,7 +161,7 @@ const Welcome = () => {
                 derivacionesPendientes.map((derivacion, index) => (
                   <tr key={index}>
                     <td>
-                      <h4 style={{textTransform:'capitalize'}}>
+                      <h4 style={{textTransform:'uppercase'}}>
                         {getUrgenciaEmoji(derivacion.URGENCIA)}
                         {derivacion.ALUMNO?.APELLIDOS}, {derivacion.ALUMNO?.NOMBRES?.split(' ')[0]}
 

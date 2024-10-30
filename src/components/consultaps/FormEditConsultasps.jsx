@@ -103,7 +103,7 @@ const FormEditConsultasPs = () => {
                                 className="input-form"
                                 value={alumno}
                                 readOnly
-                                style={{ border: "none", pointerEvents: "none" }}
+                                style={{ border: "none", pointerEvents: "none", textTransform:'uppercase' }}
                             />
                         </div>
                     </div>

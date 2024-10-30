@@ -12,6 +12,7 @@ import {
 
 import { ENDPOINTS } from "../../api/apiEndPoints";
 import { detectarEnter } from "../../utils/utils";
+import Tabla from "../partials/Tabla";
 
 const UsuarioList = () => {
   const [usuarios, setUsers] = useState([]);
@@ -28,7 +29,7 @@ const UsuarioList = () => {
     try {
       const response = await axios.get(ENDPOINTS.USUARIO.OBTENER_TODOS);
       const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO).reverse();
-      setUsers(filtrarUsuarios); 
+      setUsers(filtrarUsuarios);
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
     }
@@ -40,16 +41,16 @@ const UsuarioList = () => {
         searchText: searchText.trim()
       });
       const filtrarUsuarios = response.data.filter(u => u.ID_USUARIO !== user?.ID_USUARIO);
-      setUsers(filtrarUsuarios.reverse()); 
+      setUsers(filtrarUsuarios.reverse());
     } catch (error) {
       console.error("Error al buscar usuarios:", error);
     }
   };
 
-  const eliminar = async (id) => { 
+  const eliminar = async (id) => {
     const confirmacion = window.confirm("¿Estás seguro de eliminar este usuario?");
 
-    if(confirmacion){
+    if (confirmacion) {
       try {
         await axios.delete(ENDPOINTS.USUARIO.ELIMINAR(id));
         obtenerTodos();
@@ -58,6 +59,28 @@ const UsuarioList = () => {
       }
     }
   };
+
+  const obtenerGeneroTexto = (genero) => {
+    switch (genero) {
+      case 1: return "Masculino";
+      case 2: return "Femenino";
+      default: return "No especificado";
+    }
+  };
+
+  const activarUsuario = async (id) => {
+    const confirmacion = window.confirm("¿Estás seguro de activar este usuario?");
+
+    if (confirmacion) {
+      try {
+        await axios.patch(ENDPOINTS.USUARIO.ACTIVAR(id));
+        obtenerTodos();
+      } catch (error) {
+        console.error("Error al activar usuario:", error);
+      }
+    }
+  };
+
 
   const columns = useMemo(
     () => [
@@ -71,9 +94,9 @@ const UsuarioList = () => {
       },
       {
         Header: 'NOMBRES Y APELLIDOS',
-        Cell: ({ row }) => 
-          <div style={{textTransform:'capitalize'}}>
-            {`${row.original.NOMBRE_USUARIO} ${row.original.APELLIDO_USUARIO}`}
+        Cell: ({ row }) =>
+          <div style={{ textTransform: 'uppercase' }}>
+            {`${row.original.APELLIDO_USUARIO} ${row.original.NOMBRE_USUARIO} `}
           </div>
       },
       {
@@ -84,10 +107,14 @@ const UsuarioList = () => {
         Header: 'USERNAME',
         accessor: 'USERNAME',
       },
-      
       {
-        Header: 'TELEFONO',
+        Header: 'TELÉFONO',
         accessor: 'TELEFONO',
+      },
+      {
+        Header: 'GÉNERO',
+        accessor: 'GENERO',
+        Cell: ({ value }) => obtenerGeneroTexto(value),
       },
       {
         Header: 'ROL',
@@ -97,12 +124,27 @@ const UsuarioList = () => {
         Header: 'ACCIONES',
         Cell: ({ row }) => (
           <>
-            <Link className="btn-edit" to={`/usuario/edit/${row.original.ID_USUARIO}`}>
-            <IonIcon icon={createOutline} />
-            </Link>
-            <Link className="btn-delete" onClick={() => eliminar(row.original.ID_USUARIO)}>
-            <IonIcon icon={trashOutline} />
-            </Link>
+            {row.original.ESTADO ? (
+              <>
+                <Link className="btn-edit" to={`/usuario/edit/${row.original.ID_USUARIO}`}>
+                  <IonIcon icon={createOutline} />
+                </Link>
+
+                <Link className="btn-delete" onClick={() => eliminar(row.original.ID_USUARIO)}>
+                  <IonIcon icon={trashOutline} />
+                </Link>
+              </>
+            ) : (
+              <Link
+                className="btn-details"
+                onClick={() => activarUsuario(row.original.ID_USUARIO)}
+              >
+                Activar
+              </Link>
+            )
+
+            }
+
           </>
         ),
       },
@@ -134,7 +176,7 @@ const UsuarioList = () => {
   );
 
   return (
-    <div className="recentTable">
+    <div className="tabla">
       <div className="TableHeader">
         <h2>USUARIOS</h2>
 
@@ -142,72 +184,37 @@ const UsuarioList = () => {
           <label>
             <input
               type="text"
-              placeholder="DNI, nombres o apellidos" 
+              placeholder="DNI, nombres o apellidos"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={(e) => detectarEnter(e,buscar)}
+              onKeyDown={(e) => detectarEnter(e, buscar)}
             />
-            <IonIcon icon={searchOutline} onClick={buscar}/>
+            <IonIcon icon={searchOutline} onClick={buscar} />
           </label>
         </div>
 
-        <Link to="/usuario/add" className="btn">
-          Agregar
-        </Link>
+
+        <div>
+          <Link to="/usuario/add" className="btn">
+            Agregar
+          </Link>
+        </div>
       </div>
 
-      <table {...getTableProps()}>
-    <thead>
-        {headerGroups.map(headerGroup => {
-            const { key: headerGroupKey, ...headerGroupRest } = headerGroup.getHeaderGroupProps();
-            return (
-                <tr key={headerGroupKey} {...headerGroupRest}>
-                    {headerGroup.headers.map(column => {
-                        const { key: columnKey, ...columnRest } = column.getHeaderProps();
-                        return (
-                            <th key={columnKey} {...columnRest}>
-                                {column.render('Header')}
-                            </th>
-                        );
-                    })}
-                </tr>
-            );
-        })}
-    </thead>
-    <tbody {...getTableBodyProps()}>
-        {page.map(row => {
-            prepareRow(row);
-            const { key: rowKey, ...rowRest } = row.getRowProps();
-            return (
-                <tr key={rowKey} {...rowRest}>
-                    {row.cells.map(cell => {
-                        const { key: cellKey, ...cellRest } = cell.getCellProps();
-                        return (
-                            <td key={cellKey} {...cellRest}>
-                                {cell.render('Cell')}
-                            </td>
-                        );
-                    })}
-                </tr>
-            );
-        })}
-    </tbody>
-      </table>
+      <Tabla
+        getTableProps={getTableProps}
+        getTableBodyProps={getTableBodyProps}
+        headerGroups={headerGroups}
+        page={page}
+        prepareRow={prepareRow}
+        pageIndex={pageIndex}
+        pageOptions={pageOptions}
+        previousPage={previousPage}
+        nextPage={nextPage}
+        canPreviousPage={canPreviousPage}
+        canNextPage={canNextPage}
+      />
 
-      <div className="pagination">
-        <span>
-          Página{' '}
-          <strong>
-            {pageIndex + 1} de {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>
-      </div>
     </div>
   );
 };

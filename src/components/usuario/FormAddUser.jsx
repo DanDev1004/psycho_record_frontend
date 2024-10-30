@@ -3,6 +3,12 @@ import axios from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../assets/styles/Form.css";
 
+import { IonIcon } from '@ionic/react';
+import {
+  eyeOutline,
+  eyeOffOutline
+} from "ionicons/icons";
+
 import { ENDPOINTS } from "../../api/apiEndPoints";
 
 const FormAddUser = () => {
@@ -14,8 +20,13 @@ const FormAddUser = () => {
   const [telefono, setTelefono] = useState("");
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false); 
+  const [showPassword2, setShowPassword2] = useState(false); 
+
   const [rol, setRole] = useState("");
   const [roles, setRoles] = useState([]);
+  const [genero, setGenero] = useState(""); 
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
@@ -31,35 +42,73 @@ const FormAddUser = () => {
     cargarRoles();
   }, []);
 
-  const generarUsername = (nombre, rolSeleccionado) => {
-    if (!nombre || !rolSeleccionado) return;
+  const generarUsername = (nombre, apellido, dni, rolSeleccionado) => {
+    if (!nombre || !apellido || !dni || !rolSeleccionado) return;
+  
+    const nombrePart = nombre.slice(0, 4).toLowerCase();
+    const apellidoPart = apellido.slice(0, 3).toLowerCase()
+    const dniPart = dni.slice(0, 3);
     
-    const primerNombre = nombre.split(" ")[0].toLowerCase();
-    
-    const rolNombre = roles.find((r) => r.ID_ROL === parseInt(rolSeleccionado))?.NOMBRE_ROL.toLowerCase();
-    
-    if (primerNombre && rolNombre) {
-      setUsername(`${primerNombre}_${rolNombre}`);
+    let sufijoRol = roles.find((r) => r.ID_ROL === parseInt(rolSeleccionado))?.NOMBRE_ROL.toLowerCase();
+    if (sufijoRol === 'psicólogo') {
+      sufijoRol = 'psico';
+    } else {
+      sufijoRol = sufijoRol.slice(0, 6); 
     }
+  
+    const nuevoUsername = `${nombrePart}${apellidoPart}${dniPart}_${sufijoRol}`;
+    setUsername(nuevoUsername);
   };
+
 
   const handleNombresChange = (e) => {
     const nuevoNombre = e.target.value;
     setNombres(nuevoNombre);
-    generarUsername(nuevoNombre, rol);
+    generarUsername(nuevoNombre, apellidos, dni, rol);
   };
-
+  
+  const handleApellidosChange = (e) => {
+    const nuevoApellido = e.target.value;
+    setApellidos(nuevoApellido);
+    generarUsername(nombres, nuevoApellido, dni, rol);
+  };
+  
+  const handleDniChange = (e) => {
+    const nuevoDni = e.target.value;
+    if (/^\d{0,8}$/.test(nuevoDni)) { 
+      setDni(nuevoDni);
+      generarUsername(nombres, apellidos, nuevoDni, rol);
+    }
+  };
+  
   const handleRolChange = (e) => {
     const nuevoRol = e.target.value;
     setRole(nuevoRol);
-    generarUsername(nombres, nuevoRol); 
+    generarUsername(nombres, apellidos, dni, nuevoRol);
+  };
+
+
+
+  const validarPassword = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_\-+=<>?])[A-Za-z\d!@#$%^&*()_\-+=<>?]{8,}$/;
+    return regex.test(password);
   };
 
   const crear = async (e) => {
     e.preventDefault();
 
-    if (!dni || !nombres || !apellidos || !username || !email) {
+    if (!dni || !nombres || !apellidos || !username || !email || !genero) {
       setMsg("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
+    if (!validarPassword(password)) {
+      setMsg("La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.");
+      return;
+    }
+
+    if (password !== confPassword) {
+      setMsg("La contraseña no coincide con la confirmación.");
       return;
     }
 
@@ -74,6 +123,7 @@ const FormAddUser = () => {
         PASSWORD_USER: password,
         CONFIRM_PASSWORD_USER: confPassword,
         ID_ROL: Number(rol),
+        GENERO: Number(genero) 
       });
       navigate("/usuarios");
     } catch (error) {
@@ -82,6 +132,16 @@ const FormAddUser = () => {
       }
     }
   };
+
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowPassword2 = () => {
+    setShowPassword2(!showPassword2);
+  };
+  
 
   return (
     <div>
@@ -104,13 +164,7 @@ const FormAddUser = () => {
                 className="input-form"
                 type="text"
                 value={dni}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  //regex
-                  if (/^\d{0,8}$/.test(value)) {
-                      setDni(e.target.value);
-                  }
-              }}
+                onChange={handleDniChange}
                 placeholder="DNI"
                 required
               />
@@ -127,7 +181,7 @@ const FormAddUser = () => {
                 type="text"
                 value={nombres}
                 onChange={handleNombresChange}
-                style={{ textTransform: 'capitalize' }}
+                style={{ textTransform: 'uppercase' }}
                 placeholder="Nombres"
                 required
               />
@@ -143,8 +197,8 @@ const FormAddUser = () => {
                 className="input-form"
                 type="text"
                 value={apellidos}
-                onChange={(e) => setApellidos(e.target.value)}
-                style={{ textTransform: 'capitalize' }}
+                onChange={handleApellidosChange}
+                style={{ textTransform: 'uppercase' }}
                 placeholder="Apellidos"
                 required
               />
@@ -192,14 +246,23 @@ const FormAddUser = () => {
               <label className="label-form">Password</label>
             </div>
             <div className="col-75">
-              <input
-                className="input-form"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="******"
-                required
-              />
+              <div className="password-wrapper">
+                <input
+                  className="input-form"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="******"
+                  required
+                />
+                <button 
+                  type="button"
+                  className="btn-show-password"
+                  onClick={toggleShowPassword}
+                >
+                  {showPassword ? <IonIcon icon={eyeOffOutline} /> : <IonIcon icon={eyeOutline} />}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -208,14 +271,42 @@ const FormAddUser = () => {
               <label className="label-form">Confirmar Password</label>
             </div>
             <div className="col-75">
-              <input
+              <div className="password-wrapper">
+                <input
+                  className="input-form"
+                  type={showPassword2 ? "text" : "password"}
+                  value={confPassword}
+                  onChange={(e) => setConfPassword(e.target.value)}
+                  placeholder="******"
+                  required
+                />
+                <button
+                  type="button"
+                  className="btn-show-password"
+                  onClick={toggleShowPassword2}
+                >
+                  {showPassword2 ? <IonIcon icon={eyeOffOutline} /> : <IonIcon icon={eyeOutline} />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Género</label>
+            </div>
+            <div className="col-75">
+              <select
                 className="input-form"
-                type="password"
-                value={confPassword}
-                onChange={(e) => setConfPassword(e.target.value)}
-                placeholder="******"
+                value={genero}
+                onChange={(e) => setGenero(e.target.value)}
                 required
-              />
+              >
+                <option value="">Seleccionar género</option>
+                <option value="1">Masculino</option>
+                <option value="2">Femenino</option>
+              </select>
             </div>
           </div>
 

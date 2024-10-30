@@ -66,7 +66,7 @@ const DerivacionList = () => {
                     Header: 'ALUMNO',
                     accessor: 'ALUMNO',
                     Cell: ({ value }) =>
-                        value ? `${value.NOMBRES} ${value.APELLIDOS}` : "No asignado",
+                        value ? <div style={{textTransform:'uppercase'}}>{value.NOMBRES} {value.APELLIDOS}</div> : "No asignado",
                 },
                 {
                     Header: () => (
@@ -139,7 +139,7 @@ const DerivacionList = () => {
                     Header: 'REMITENTE',
                     accessor: 'USUARIO',
                     Cell: ({ value }) =>
-                        value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "No asignado",
+                        value ? <div style={{textTransform:'uppercase'}}>{value.APELLIDO_USUARIO} {value.NOMBRE_USUARIO}</div> : "No asignado",
                 });
             }
 
@@ -172,7 +172,7 @@ const DerivacionList = () => {
     );
 
     return (
-        <div className="recentTable">
+        <div className="tabla">
             <div className="TableHeader">
                 <h2>Derivaciones</h2>
 

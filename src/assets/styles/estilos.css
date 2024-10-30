@@ -212,20 +212,20 @@ body {
 .titulo-label {
   font-size: 2rem;
   font-weight: 600;
-  color: var(--blue)
+  color: var(--blue);
 }
 
 .user-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-decoration: none
+  text-decoration: none;
 }
 
 
 .user-info {
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 .user-name {
@@ -234,7 +234,7 @@ body {
   display: flex;
   align-items: center;
   text-align: end;
-  margin: 0
+  margin: 0;
 }
 
 .user-name:hover {
@@ -270,7 +270,7 @@ body {
   white-space: nowrap;
 }
 
-.details .recentTable {
+.details .tabla {
   position: relative;
   display: grid;
   background: var(--white);
@@ -312,43 +312,43 @@ body {
   font-weight: 600;
 }
 
-.details .recentTable table tr {
+.details .tabla table tr {
   color: var(--black1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.details .recentTable table tr:last-child {
+.details .tabla table tr:last-child {
   border-bottom: none;
 }
 
-.details .recentTable table tbody tr:hover {
+.details .tabla table tbody tr:hover {
   background: var(--blue);
   color: var(--white);
 }
 
 
 
-.details .recentTable table tr td {
+.details .tabla table tr td {
   padding: 10px;
   text-align: center;
 }
 
 /*
-.details .recentTable table tr td:last-child {
+.details .tabla table tr td:last-child {
   text-align: center;
 }
 
-.details .recentTable table tr td:nth-child(1) {
+.details .tabla table tr td:nth-child(1) {
   text-align: center;
 }
 
-.details .recentTable table tr td:nth-child(2) {
+.details .tabla table tr td:nth-child(2) {
   text-align: center;
 }
-.details .recentTable table tr td:nth-child(3) {
+.details .tabla table tr td:nth-child(3) {
   text-align: center;
 }
-.details .recentTable table tr td:nth-child(4) {
+.details .tabla table tr td:nth-child(4) {
   text-align: center;
 }
   */
@@ -402,6 +402,9 @@ body {
   border-radius: 6px;
   margin-right: 1px;
 }
+
+
+
 
 .pagination {
   display: flex;
@@ -519,7 +522,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .recentTable {
+  .tabla {
     overflow-x: auto;
   }
 }
@@ -531,7 +534,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .recentTable {
+  .tabla {
     overflow-x: auto;
   }
 

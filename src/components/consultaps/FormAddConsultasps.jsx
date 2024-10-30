@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import Select from "react-select";
 import "../../assets/styles/Form.css";
 import { ENDPOINTS } from "../../api/apiEndPoints";
-import { convertirRomanos } from "../../utils/utils"; 
+import { convertirRomanos } from "../../utils/utils";
 
 const FormAddConsultasPs = () => {
     const { user } = useSelector((state) => state.auth);
@@ -13,13 +13,16 @@ const FormAddConsultasPs = () => {
     const [derivaciones, setDerivaciones] = useState([]);
     const [tipoDerivacion, setTipoDerivacion] = useState(1);
 
+    const [usuariosPsicologo, setUsuariosPsicologo] = useState([]);
+    const [psicologoAsignado, setPsicologoAsignado] = useState(null);
+
     const [alumno, setAlumno] = useState(null);
     const [alumnoDerivFam, setAlumnoDerivFam] = useState(null);
     const [nombreFamiliar, setNombreFamiliar] = useState("");
     const [telefonoFamiliar, setTelefonoFamiliar] = useState("");
     const [parentescoFamiliar, setParentescoFamiliar] = useState("");
     const [derivacion, setDerivacion] = useState("");
-    const [areasPe, setAreasPe] = useState([]); 
+    const [areasPe, setAreasPe] = useState([]);
     const [areaEstudio, setAreaEstudio] = useState("");
     const [ciclo, setCiclo] = useState("");
 
@@ -35,7 +38,7 @@ const FormAddConsultasPs = () => {
     const [conducta, setConducta] = useState("");
     const [msg, setMsg] = useState("");
     const navigate = useNavigate();
-    const { idAlumno, id } = useParams();
+    const { idAlumno, id_alumno_derivado } = useParams();
 
     useEffect(() => {
         const cargarDatos = async () => {
@@ -45,13 +48,17 @@ const FormAddConsultasPs = () => {
 
                 const alumnosOptions = alumnosResponse.data.map(alumno => ({
                     value: alumno.ID_ALUMNO,
-                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno?.AREA_PE.NOMBRE_AREA_PE} - ${alumno.CICLO}`,
+                    label: `${alumno.NOMBRES} ${alumno.APELLIDOS} - ${alumno?.AREA_PE.NOMBRE_AREA_PE} - ${convertirRomanos(alumno.CICLO)}`,
                     areaEstudio: alumno.AREA_PE.ID_AREA_PE,
                     ciclo: alumno.CICLO
                 }));
 
                 setAlumnos(alumnosOptions);
                 setDerivaciones(derivacionesResponse.data);
+
+                if (tipoDerivacion === 1) {
+                    cargarUsuariosPsicologo();
+                }
 
                 if (idAlumno) {
                     const alumnoSeleccionado = alumnosOptions.find(
@@ -62,12 +69,12 @@ const FormAddConsultasPs = () => {
                     }
                 }
 
-                if (id) {
+                if (id_alumno_derivado) {
                     setTipoDerivacion(3);
-                    setDerivacion(parseInt(id));
+                    setDerivacion(parseInt(id_alumno_derivado));
 
                     const derivacionSeleccionada = derivacionesResponse.data.find(
-                        (deriv) => deriv.ID_DERIVACION === parseInt(id)
+                        (deriv) => deriv.ID_DERIVACION === parseInt(id_alumno_derivado)
                     );
 
                     if (derivacionSeleccionada) {
@@ -90,7 +97,30 @@ const FormAddConsultasPs = () => {
 
         cargarDatos();
         cargarAreasPe();
-    }, [idAlumno, id]);
+    }, [idAlumno, id_alumno_derivado, tipoDerivacion]);
+
+    const cargarUsuariosPsicologo = async () => {
+        try {
+            const response = await axios.get(ENDPOINTS.USUARIO.OBTENER_TODOS);
+            const usuariosFiltrados = response.data
+                .filter((usuario) => usuario.ID_ROL === 2)
+                .map((usuario) => ({
+                    value: usuario.ID_USUARIO,
+                    label: `${usuario.NOMBRE_USUARIO} ${usuario.APELLIDO_USUARIO}`,
+                }));
+            setUsuariosPsicologo(usuariosFiltrados);
+        } catch (error) {
+            console.error("Error al cargar los usuarios", error);
+        }
+    };
+
+    const derivacionOptions = derivaciones
+        .filter((deriv) => deriv.ESTADO === true && deriv.RECIBIDO === false)
+        .map((deriv) => ({
+            value: deriv.ID_DERIVACION,
+            label: `Docente: ${deriv.USUARIO.NOMBRE_USUARIO} ${deriv.USUARIO.APELLIDO_USUARIO} - Alumno: ${deriv.ALUMNO?.NOMBRES} ${deriv.ALUMNO?.APELLIDOS} - Urgencia: ${deriv.URGENCIA === 1 ? 'Baja' : deriv.URGENCIA === 2 ? 'Media' : 'Alta'}`,
+        }));
+
 
     const cargarAreasPe = async () => {
         try {
@@ -105,6 +135,8 @@ const FormAddConsultasPs = () => {
         }
     };
 
+
+
     const tipoDerivacionCambio = (e) => {
         setTipoDerivacion(parseInt(e.target.value));
         setAlumno(null);
@@ -118,8 +150,8 @@ const FormAddConsultasPs = () => {
         setCiclo("");
     };
 
-    const derivacionCambio = (e) => {
-        const selectedDerivacionId = parseInt(e.target.value);
+    const derivacionCambio = (selectedValue) => {
+        const selectedDerivacionId = parseInt(selectedValue);
         setDerivacion(selectedDerivacionId);
 
         const derivacionSeleccionada = derivaciones.find(
@@ -141,13 +173,15 @@ const FormAddConsultasPs = () => {
         }
     };
 
+
+
     const ciclosOptions = [
-        { value: 1, label: convertirRomanos(1) },
-        { value: 2, label: convertirRomanos(2) },
-        { value: 3, label: convertirRomanos(3) },
-        { value: 4, label: convertirRomanos(4) },
-        { value: 5, label: convertirRomanos(5) },
-        { value: 6, label: convertirRomanos(6) },
+        { value: 1, label: 'I' },
+        { value: 2, label: 'II' },
+        { value: 3, label: 'III' },
+        { value: 4, label: 'IV' },
+        { value: 5, label: 'V' },
+        { value: 6, label: 'VI' },
     ];
 
     const alumnosFiltrados = alumnos.filter((alumno) =>
@@ -160,7 +194,7 @@ const FormAddConsultasPs = () => {
         const familiarInfo = `${nombreFamiliar}|${telefonoFamiliar}|${parentescoFamiliar}`;
         try {
             await axios.post(ENDPOINTS.CONSULTAPS.CREAR, {
-                ID_USUARIO: user?.ID_USUARIO,
+                ID_USUARIO: psicologoAsignado ? psicologoAsignado.value : user?.ID_USUARIO,
                 TIPO_DERIVACION: tipoDerivacion,
                 ID_ALUMNO: tipoDerivacion === 1 ? alumno?.value : tipoDerivacion === 2 ? alumnoDerivFam?.value : tipoDerivacion === 3 ? alumno?.value : "",
                 FAMILIAR: tipoDerivacion === 2 ? familiarInfo : "",
@@ -205,7 +239,7 @@ const FormAddConsultasPs = () => {
                                 className="input-form"
                                 value={tipoDerivacion}
                                 onChange={tipoDerivacionCambio}
-                                disabled={!!idAlumno || !!id}
+                                disabled={!!idAlumno || !!id_alumno_derivado}
                                 required
                             >
                                 <option value={1}>Autónomo</option>
@@ -219,54 +253,84 @@ const FormAddConsultasPs = () => {
 
                     {tipoDerivacion === 1 && (
                         <>
+                            {user && (user.ID_ROL === 1) && (
+                                <div className="row">
+                                    <div className="col-25">
+                                        <label className="label-form">Psicólogo Asignado:</label>
+                                    </div>
+                                    <div className="col-75">
+                                        <Select
+                                            options={usuariosPsicologo}
+                                            value={psicologoAsignado}
+                                            onChange={setPsicologoAsignado}
+                                            className="input-form"
+                                            placeholder="Seleccionar psicólogo"
+                                            isClearable
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="row">
                                 <div className="col-25">
-                                    <label className="label-form">Área de Estudio</label>
+                                    <label className="label-form">Área de Estudio:</label>
                                 </div>
                                 <div className="col-75">
-                                    <Select
-                                        options={areasPe}
-                                        value={areasPe.find((area) => area.value === areaEstudio)}
-                                        onChange={(selectedOption) => setAreaEstudio(selectedOption?.value || "")}
-                                        className="input-form"
-                                        placeholder="Seleccionar área"
-                                        isClearable
-                                        isDisabled={!!idAlumno}
-                                    />
+                                    {idAlumno ? (
+                                        <p className="input-form" style={{ textTransform: 'uppercase', border: 'none' }}>{alumno?.label?.split(' - ')[1] || "No disponible"}</p>
+                                    ) : (
+                                        <Select
+                                            options={areasPe}
+                                            value={areasPe.find((area) => area.value === areaEstudio)}
+                                            onChange={(selectedOption) => setAreaEstudio(selectedOption?.value || "")}
+                                            className="input-form"
+                                            placeholder="Seleccionar área"
+                                            isClearable
+                                            isDisabled={!!idAlumno}
+                                        />
+                                    )}
                                 </div>
                             </div>
 
                             <div className="row">
                                 <div className="col-25">
-                                    <label className="label-form">Ciclo</label>
+                                    <label className="label-form">Ciclo:</label>
                                 </div>
                                 <div className="col-75">
-                                    <Select
-                                        options={ciclosOptions}
-                                        value={ciclosOptions.find((cicloOption) => cicloOption.value === ciclo)}
-                                        onChange={(selectedOption) => setCiclo(selectedOption?.value || "")}
-                                        className="input-form"
-                                        placeholder="Seleccionar ciclo"
-                                        isClearable
-                                        isDisabled={!!idAlumno}
-                                    />
+                                    {idAlumno ? (
+                                        <p className="input-form" style={{ textTransform: 'uppercase', border: 'none' }}>{alumno?.label?.split(' - ')[2] || "No disponible"}</p>
+                                    ) : (
+                                        <Select
+                                            options={ciclosOptions}
+                                            value={ciclosOptions.find((cicloOption) => cicloOption.value === ciclo)}
+                                            onChange={(selectedOption) => setCiclo(selectedOption?.value || "")}
+                                            className="input-form"
+                                            placeholder="Seleccionar ciclo"
+                                            isClearable
+                                            isDisabled={!!idAlumno}
+                                        />
+                                    )}
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-25">
-                                    <label className="label-form">Alumno</label>
+                                    <label className="label-form">Alumno:</label>
                                 </div>
                                 <div className="col-75">
-                                    <Select
-                                        options={alumnosFiltrados}
-                                        value={alumno}
-                                        onChange={setAlumno}
-                                        className="input-form"
-                                        placeholder="Seleccionar alumno"
-                                        isDisabled={!!idAlumno}
-                                        required
-                                        isClearable
-                                    />
+                                    {idAlumno ? (
+                                        <p className="input-form" style={{ textTransform: 'uppercase', border: 'none' }}>{alumno?.label?.split(' - ')[0] || "No disponible"}</p>
+                                    ) : (
+                                        <Select
+                                            options={alumnosFiltrados}
+                                            value={alumno}
+                                            onChange={setAlumno}
+                                            className="input-form"
+                                            placeholder="Seleccionar alumno"
+                                            isDisabled={!!idAlumno}
+                                            required
+                                            isClearable
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </>
@@ -392,27 +456,25 @@ const FormAddConsultasPs = () => {
                                 <label className="label-form">Derivación</label>
                             </div>
                             <div className="col-75">
-                                <select
+                                
+                                <Select
+                                    options={derivacionOptions}
+                                    value={derivacionOptions.find(option => option.value === derivacion)}
+                                    onChange={(selectedOption) => {
+                                        const selectedValue = selectedOption?.value || '';
+                                        setDerivacion(selectedValue);
+
+                                        derivacionCambio(selectedValue);
+                                    }}
                                     className="input-form"
-                                    value={derivacion}
-                                    onChange={derivacionCambio}
-                                    disabled={!!id}
-                                    required
-                                >
-                                    <option value="">Seleccionar Derivación</option>
-                                    {derivaciones
-                                        .filter((deriv) => deriv.ESTADO === true)
-                                        .filter((deriv) => deriv.RECIBIDO === false)
-                                        .map((deriv) => (
-                                            <option key={deriv.ID_DERIVACION} value={deriv.ID_DERIVACION}>
-                                                {deriv.USUARIO.NOMBRE_USUARIO} {deriv.USUARIO.APELLIDO_USUARIO} - {deriv.ALUMNO?.NOMBRES} {deriv.ALUMNO?.APELLIDOS} -
-                                                {` Urgencia: ${deriv.URGENCIA === 1 ? ' Baja' : deriv.URGENCIA === 2 ? ' Media' : ' Alta'}`}
-                                            </option>
-                                        ))}
-                                </select>
+                                    placeholder="Seleccionar Derivación"
+                                    isDisabled={!!id_alumno_derivado}
+                                    isClearable
+                                />
                             </div>
                         </div>
                     )}
+
 
                     <div className="row">
                         <div className="col-25">

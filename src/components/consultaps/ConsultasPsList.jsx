@@ -136,6 +136,7 @@ const ConsultasPsList = () => {
 
 
 
+
     const columns = useMemo(
         () => [
             {
@@ -146,7 +147,7 @@ const ConsultasPsList = () => {
                 Header: 'Psicologo/a',
                 accessor: 'USUARIO',
                 Cell: ({ value }) =>
-                    value ? `${value.NOMBRE_USUARIO} ${value.APELLIDO_USUARIO}` : "------------",
+                    value ? <div style={{textTransform:'uppercase'}}>{value.NOMBRE_USUARIO} {value.APELLIDO_USUARIO}</div> : "------------",
             },
             {
                 Header: 'Tipo Derivación',
@@ -160,7 +161,7 @@ const ConsultasPsList = () => {
                 Header: 'Alumno (DNI)',
                 accessor: 'ALUMNO',
                 Cell: ({ value }) =>
-                    value ? `${value.NOMBRES} ${value.APELLIDOS} (DNI: ${value.DNI})` : "------------",
+                    value ? <div style={{textTransform:'uppercase'}}>{value.NOMBRES} {value.APELLIDOS} (DNI: {value.DNI})</div> : "------------",
             },
             {
                 Header: 'Fecha Atención',
@@ -225,7 +226,7 @@ const ConsultasPsList = () => {
 
     return (
         <>
-            <div className="recentTable">
+            <div className="tabla">
                 <div className="TableHeader">
                     <h2>Consultas Psicológicas</h2>
 

@@ -53,7 +53,7 @@ function App() {
 
           <Route path="/Consultasps" element={<Consultasps/>}/>
           <Route path="/Consultasps/add" element={<AddConsultasps/>}/>
-          <Route path="/Consultasps/add/:id" element={<AddConsultasps/>}/>
+          <Route path="/Consultasps/add/:id_alumno_derivado" element={<AddConsultasps/>}/>
           <Route path="/Consultasps/edit/:id" element={<EditConsultasps/>}/>
           <Route path="/Consultasps/detail/:id" element={<PageDetailsConsultaPs/>}/>
 
