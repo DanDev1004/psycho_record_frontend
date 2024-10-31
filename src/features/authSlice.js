@@ -10,27 +10,31 @@ const initialState = {
     message: ""
 }
 
-export const LoginUser = createAsyncThunk("user/LoginUser", async(user, thunkAPI) => {
+export const LoginUser = createAsyncThunk("user/LoginUser", async (user, thunkAPI) => {
     try {
         const response = await axios.post(ENDPOINTS.AUTH.LOGIN, {
             username: user.username,
             password: user.password
+        }, {
+            withCredentials: true 
         });
         return response.data;
     } catch (error) {
-        if(error.response){
+        if (error.response) {
             const message = error.response.data.msg;
             return thunkAPI.rejectWithValue(message);
         }
     }
 });
 
-export const getMe = createAsyncThunk("user/getMe", async(_, thunkAPI) => {
+export const getMe = createAsyncThunk("user/getMe", async (_, thunkAPI) => {
     try {
-        const response = await axios.get(ENDPOINTS.AUTH.ME);
+        const response = await axios.get(ENDPOINTS.AUTH.ME, {
+            withCredentials: true 
+        });
         return response.data;
     } catch (error) {
-        if(error.response){
+        if (error.response) {
             const message = error.response.data.msg;
             return thunkAPI.rejectWithValue(message);
         }
@@ -38,7 +42,9 @@ export const getMe = createAsyncThunk("user/getMe", async(_, thunkAPI) => {
 });
 
 export const LogOut = createAsyncThunk("user/LogOut", async() => {
-    await axios.delete(ENDPOINTS.AUTH.LOGOUT);
+    await axios.delete(ENDPOINTS.AUTH.LOGOUT,{
+        withCredentials: true
+    });
 });
 
 export const authSlice = createSlice({
