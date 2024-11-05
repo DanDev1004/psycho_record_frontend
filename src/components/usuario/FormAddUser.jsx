@@ -21,12 +21,12 @@ const FormAddUser = () => {
   const [password, setPassword] = useState("");
   const [confPassword, setConfPassword] = useState("");
 
-  const [showPassword, setShowPassword] = useState(false); 
-  const [showPassword2, setShowPassword2] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const [rol, setRole] = useState("");
   const [roles, setRoles] = useState([]);
-  const [genero, setGenero] = useState(""); 
+  const [genero, setGenero] = useState("");
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
@@ -44,18 +44,18 @@ const FormAddUser = () => {
 
   const generarUsername = (nombre, apellido, dni, rolSeleccionado) => {
     if (!nombre || !apellido || !dni || !rolSeleccionado) return;
-  
+
     const nombrePart = nombre.slice(0, 4).toLowerCase();
     const apellidoPart = apellido.slice(0, 3).toLowerCase()
     const dniPart = dni.slice(0, 3);
-    
+
     let sufijoRol = roles.find((r) => r.ID_ROL === parseInt(rolSeleccionado))?.NOMBRE_ROL.toLowerCase();
     if (sufijoRol === 'psicólogo') {
       sufijoRol = 'psico';
     } else {
-      sufijoRol = sufijoRol.slice(0, 6); 
+      sufijoRol = sufijoRol.slice(0, 6);
     }
-  
+
     const nuevoUsername = `${nombrePart}${apellidoPart}${dniPart}_${sufijoRol}`;
     setUsername(nuevoUsername);
   };
@@ -66,21 +66,21 @@ const FormAddUser = () => {
     setNombres(nuevoNombre);
     generarUsername(nuevoNombre, apellidos, dni, rol);
   };
-  
+
   const handleApellidosChange = (e) => {
     const nuevoApellido = e.target.value;
     setApellidos(nuevoApellido);
     generarUsername(nombres, nuevoApellido, dni, rol);
   };
-  
+
   const handleDniChange = (e) => {
     const nuevoDni = e.target.value;
-    if (/^\d{0,8}$/.test(nuevoDni)) { 
+    if (/^\d{0,8}$/.test(nuevoDni)) {
       setDni(nuevoDni);
       generarUsername(nombres, apellidos, nuevoDni, rol);
     }
   };
-  
+
   const handleRolChange = (e) => {
     const nuevoRol = e.target.value;
     setRole(nuevoRol);
@@ -117,13 +117,13 @@ const FormAddUser = () => {
         DNI_USUARIO: dni,
         NOMBRE_USUARIO: nombres,
         APELLIDO_USUARIO: apellidos,
-        USERNAME: username, 
+        USERNAME: username,
         EMAIL: email,
         TELEFONO: telefono,
         PASSWORD_USER: password,
         CONFIRM_PASSWORD_USER: confPassword,
         ID_ROL: Number(rol),
-        GENERO: Number(genero) 
+        GENERO: Number(genero)
       });
       navigate("/usuarios");
     } catch (error) {
@@ -141,7 +141,7 @@ const FormAddUser = () => {
   const toggleShowPassword2 = () => {
     setShowPassword2(!showPassword2);
   };
-  
+
 
   return (
     <div>
@@ -233,13 +233,32 @@ const FormAddUser = () => {
                   const value = e.target.value;
                   //regex
                   if (/^\d{0,9}$/.test(value)) {
-                      setTelefono(value);
+                    setTelefono(value);
                   }
-              }}
+                }}
                 placeholder="987654321"
               />
             </div>
           </div>
+
+          <div className="row">
+            <div className="col-25">
+              <label className="label-form">Género</label>
+            </div>
+            <div className="col-75">
+              <select
+                className="input-form"
+                value={genero}
+                onChange={(e) => setGenero(e.target.value)}
+                required
+              >
+                <option value="">Seleccionar género</option>
+                <option value="1">Masculino</option>
+                <option value="2">Femenino</option>
+              </select>
+            </div>
+          </div>
+
 
           <div className="row">
             <div className="col-25">
@@ -250,12 +269,13 @@ const FormAddUser = () => {
                 <input
                   className="input-form"
                   type={showPassword ? "text" : "password"}
+                  style={{textTransform:'none'}}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="******"
                   required
                 />
-                <button 
+                <button
                   type="button"
                   className="btn-show-password"
                   onClick={toggleShowPassword}
@@ -274,6 +294,7 @@ const FormAddUser = () => {
               <div className="password-wrapper">
                 <input
                   className="input-form"
+                  style={{textTransform:'none'}}
                   type={showPassword2 ? "text" : "password"}
                   value={confPassword}
                   onChange={(e) => setConfPassword(e.target.value)}
@@ -288,25 +309,6 @@ const FormAddUser = () => {
                   {showPassword2 ? <IonIcon icon={eyeOffOutline} /> : <IonIcon icon={eyeOutline} />}
                 </button>
               </div>
-            </div>
-          </div>
-
-          
-          <div className="row">
-            <div className="col-25">
-              <label className="label-form">Género</label>
-            </div>
-            <div className="col-75">
-              <select
-                className="input-form"
-                value={genero}
-                onChange={(e) => setGenero(e.target.value)}
-                required
-              >
-                <option value="">Seleccionar género</option>
-                <option value="1">Masculino</option>
-                <option value="2">Femenino</option>
-              </select>
             </div>
           </div>
 
